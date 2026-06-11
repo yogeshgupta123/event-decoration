@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@theme {
+  --color-gold-primary: #C9A84C;
+  --color-gold-light: #E8C97A;
+  --color-gold-dark: #9A7A2E;
+  --color-gold-shine: #F5E6B8;
+  --color-cream: #FDFAF4;
+  --color-cream-dark: #F5EFE0;
+  --color-text-primary: #1A1208;
+  --color-text-secondary: #5C4A1E;
+  --color-text-muted: #9E8A6A;
+}
+
+html, body, #root {
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}

@@ -1,0 +1,12 @@
+// ============================================
+// MAIN.SCSS — sabka boss file 😄
+// sab files yahan import hoti hain
+// ek hi file main.tsx mein import karni hai
+// ============================================
+
+// pehle variables — kyunki baaki files inhe use karti hain
+@use './variables' as *;
+
+// phir base
+@use './base';
+@import '../index.css';

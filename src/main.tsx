@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { store } from './store/index'
 import './index.css'
+import './styles/main.scss'   // ye line badli — index.css ki jagah
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(
