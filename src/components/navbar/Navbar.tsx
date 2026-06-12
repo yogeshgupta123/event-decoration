@@ -94,7 +94,7 @@ const Navbar = () => {
         style={{ boxShadow: '0 2px 20px rgba(201,168,76,0.08)' }}
         onMouseLeave={() => setActiveMenu(null)}
       >
-        <div className="container mx-auto px-6 h-[80px] flex items-center justify-between gap-4">
+        <div className="container mx-auto px-4 h-[80px] flex items-center justify-between gap-4">
 
           {/* LOGO */}
           <Link to="/" className="flex flex-col leading-tight shrink-0">
@@ -114,20 +114,20 @@ const Navbar = () => {
           </button>
 
           {/* SEARCH */}
-          <div className="hidden md:flex flex-1 max-w-[440px] items-center bg-[#FDFAF4] border border-[#EDE0C4] rounded-full px-4 py-2.5 gap-3 hover:border-[#C9A84C] transition-colors">
-            <FiSearch size={15} color="#C9A84C" />
+          <div className="hidden md:flex flex-1 max-w-[520px] items-center bg-[#FDFAF4] border border-[#EDE0C4] rounded-full px-5 py-3 gap-4 hover:border-[#C9A84C] transition-colors">
+            <FiSearch size={15} color="#C9A84C"  />
             <input
               type="text"
               placeholder="Search events, vendors, services..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent outline-none placeholder-[#9E8A6A] text-[#1A1208]"
-              style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.82rem' }}
+              style={{ fontFamily: "'Jost', sans-serif",fontSize: '0.9rem' }}
             />
           </div>
 
           {/* RIGHT ICONS */}
-          <div className="hidden md:flex items-center gap-5 shrink-0">
+          <div className="hidden md:flex items-center gap-7 shrink-0">
 
             <button className="flex flex-col items-center gap-0.5 text-[#5C4A1E] hover:text-[#C9A84C] transition-colors">
               <FiHelpCircle size={18} />
@@ -210,13 +210,7 @@ const Navbar = () => {
               <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.58rem', letterSpacing: '0.1em' }}>CART</span>
             </button>
 
-            <Link
-              to="/register"
-              className="bg-[#C9A84C] text-white px-5 py-2.5 text-[0.7rem] uppercase font-semibold hover:bg-[#E8C97A] hover:text-[#1A1208] transition-all"
-              style={{ fontFamily: "'Jost', sans-serif", letterSpacing: '0.15em' }}
-            >
-              Book Now
-            </Link>
+           
           </div>
 
           {/* MOBILE RIGHT */}

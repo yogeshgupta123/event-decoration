@@ -1,143 +1,116 @@
-// ============================================
-// ye _variables.scss import kar raha hai
-// kyunki humein $gold, $cream wale variables chahiye
-// ============================================
 @use './variables' as *;
 
-// ============================================
-// GOOGLE FONTS IMPORT
-// Cormorant Garamond = luxury serif (headings)
-// Jost = clean modern (body)
-// Great Vibes = cursive (special text)
-// ============================================
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Great+Vibes&family=Jost:wght@300;400;500;600&display=swap');
 
 // ============================================
-// RESET — browser ki default styling hatao
-// har browser alag alag default styles deta hai
-// isliye reset zaroori hai
+// @layer base — Tailwind ko batata hai ki
+// ye "default" styles hain. Agar koi Tailwind
+// class (mb-4, gap-3, etc) same property set
+// kare, toh Tailwind ko priority milegi!
 // ============================================
-*, *::before, *::after {
-  margin: 0;           // default margin hatao
-  padding: 0;          // default padding hatao
-  box-sizing: border-box; // padding width mein count ho
-}
+@layer base {
 
-// ============================================
-// ROOT — CSS variables banao
-// SCSS variables sirf SCSS mein kaam karti hain
-// CSS variables (--gold) poore browser mein kaam karti hain
-// dono sath rakhna best practice hai
-// ============================================
-:root {
-  --gold-primary: #{$gold-primary};
-  --gold-light: #{$gold-light};
-  --gold-dark: #{$gold-dark};
-  --gold-shine: #{$gold-shine};
-  --cream: #{$cream};
-  --cream-dark: #{$cream-dark};
-  --text-primary: #{$text-primary};
-  --text-secondary: #{$text-secondary};
-  --text-muted: #{$text-muted};
-  --shadow-md: #{$shadow-md};
-  --shadow-lg: #{$shadow-lg};
-}
-
-// ============================================
-// BODY — poori website ki base styling
-// ============================================
-body {
-  font-family: $font-body;        // Jost font use karo
-  background-color: $cream;       // warm white background
-  color: $text-primary;           // dark brown text
-  line-height: 1.6;               // lines ke beech space
-  -webkit-font-smoothing: antialiased; // fonts sharp dikhein Mac pe
-  overflow-x: hidden;             // horizontal scroll band karo
-}
-
-// ============================================
-// HEADINGS — h1 se h6 tak
-// ============================================
-h1, h2, h3, h4, h5, h6 {
-  font-family: $font-heading;     // Cormorant Garamond — luxury feel
-  color: $text-primary;
-  line-height: 1.2;
-  font-weight: 600;
-}
-
-// ============================================
-// LINKS
-// ============================================
-a {
-  text-decoration: none;          // underline hatao
-  color: inherit;                 // parent ka color lo
-  transition: color $transition-fast; // smooth color change
-}
-
-// ============================================
-// IMAGES
-// ============================================
-img {
-  max-width: 100%;                // image kabhi container se badi na ho
-  display: block;
-}
-
-// ============================================
-// BUTTONS RESET
-// ============================================
-button {
-  cursor: pointer;                // pointer cursor
-  border: none;
-  background: none;
-  font-family: $font-body;        // body font use karo
-}
-
-// ============================================
-// SCROLLBAR — luxury gold scrollbar
-// ============================================
-::-webkit-scrollbar {
-  width: 6px;                     // patli scrollbar
-}
-
-::-webkit-scrollbar-track {
-  background: $cream-dark;        // track ka color
-}
-
-::-webkit-scrollbar-thumb {
-  background: $gold-primary;      // gold scrollbar
-  border-radius: 3px;
-}
-
-// ============================================
-// SELECTION — text select karne par gold color
-// ============================================
-::selection {
-  background: $gold-shine;
-  color: $text-primary;
-}
-
-// ============================================
-// UTILITY CLASSES — common classes
-// ============================================
-.container {
-  max-width: $desktop;            // max width 1280px
-  margin: 0 auto;                 // center karo
-  padding: 0 $spacing-lg;        // left right padding
-
-  // Tablet pe padding kam karo
-  @media (max-width: $tablet) {
-    padding: 0 $spacing-md;
+  // RESET
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-}
 
-.gold-text {
-  color: $gold-primary;
-}
+  // ROOT CSS VARIABLES
+  :root {
+    --gold-primary: #{$gold-primary};
+    --gold-light: #{$gold-light};
+    --gold-dark: #{$gold-dark};
+    --gold-shine: #{$gold-shine};
+    --cream: #{$cream};
+    --cream-dark: #{$cream-dark};
+    --text-primary: #{$text-primary};
+    --text-secondary: #{$text-secondary};
+    --text-muted: #{$text-muted};
+    --shadow-md: #{$shadow-md};
+    --shadow-lg: #{$shadow-lg};
+  }
 
-.section-padding {
-  padding: $spacing-4xl 0;        // top bottom padding sections ke liye
+  // BODY
+  body {
+    font-family: $font-body;
+    background-color: $cream;
+    color: $text-primary;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
 
-  @media (max-width: $tablet) {
-    padding: $spacing-3xl 0;
+  // HEADINGS
+  h1, h2, h3, h4, h5, h6 {
+    font-family: $font-heading;
+    color: $text-primary;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  // LINKS
+  a {
+    text-decoration: none;
+    color: inherit;
+    transition: color $transition-fast;
+  }
+
+  // IMAGES
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  // BUTTONS
+  button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: $font-body;
+  }
+
+  // SCROLLBAR
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: $cream-dark;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: $gold-primary;
+    border-radius: 3px;
+  }
+
+  // SELECTION
+  ::selection {
+    background: $gold-shine;
+    color: $text-primary;
+  }
+
+  // UTILITY CLASSES
+  .container {
+    max-width: $desktop;
+    margin: 0 auto;
+    padding: 0 $spacing-lg;
+
+    @media (max-width: $tablet) {
+      padding: 0 $spacing-md;
+    }
+  }
+
+  .gold-text {
+    color: $gold-primary;
+  }
+
+  .section-padding {
+    padding: $spacing-4xl 0;
+
+    @media (max-width: $tablet) {
+      padding: $spacing-3xl 0;
+    }
   }
 }
