@@ -1,10 +1,16 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiPhone } from 'react-icons/fi'
 import { FcGoogle } from 'react-icons/fc'
 import { FaFacebook } from 'react-icons/fa'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { register } from '../store/authSlice'
 
 const Register = () => {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const { loading, error, isLoggedIn } = useAppSelector((state) => state.auth)
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -12,30 +18,33 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [localError, setLocalError] = useState('')
+
+  // Login hone par Home pe bhej do
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/')
+    }
+  }, [isLoggedIn, navigate])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    setLocalError('')
 
+    // Frontend validation — API call se pehle check karo
     if (password !== confirmPassword) {
-      setError('Passwords do not match!')
+      setLocalError('Passwords do not match!')
       return
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setLocalError('Password must be at least 6 characters')
       return
     }
 
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), 2000)
+    // Redux thunk — backend ko bhejo
+    dispatch(register({ name, email, phone, password, confirmPassword }))
   }
 
-  // ============================================
-  // REUSABLE CLASSES — Tailwind classes ko variable mein rakha
-  // taaki repeat na karna pade
-  // ============================================
   const inputWrapper = "flex items-center gap-3 border border-[#EDE0C4] px-4 py-3.5 bg-[#FDFAF4] focus-within:border-[#C9A84C] transition-colors"
   const inputField = "flex-1 bg-transparent outline-none text-[#1A1208] placeholder-[#9E8A6A]"
   const labelStyle = "block mb-2 text-[0.68rem] text-[#5C4A1E] tracking-[0.15em] uppercase"
@@ -104,7 +113,7 @@ const Register = () => {
           </div>
 
           {/* Heading */}
-          <div className="mb-7">
+          <div className="mb-6">
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2.6rem] text-[#1A1208] font-semibold leading-tight mb-2">
               Create Account
             </h1>
@@ -112,6 +121,13 @@ const Register = () => {
               Begin your journey with Together Moments.
             </p>
           </div>
+
+          {/* Error — local validation ya Redux error */}
+          {(localError || error) && (
+            <div style={{ fontFamily: "'Jost', sans-serif" }} className="bg-[#FCEBEB] border border-[#E24B4A] px-4 py-3 mb-5 text-[0.78rem] text-[#A32D2D]">
+              {localError || error}
+            </div>
+          )}
 
           {/* Social Buttons */}
           <div className="flex gap-3 mb-6">
@@ -131,13 +147,6 @@ const Register = () => {
             </span>
             <div className="flex-1 h-px bg-[#EDE0C4]" />
           </div>
-
-          {/* Error */}
-          {error && (
-            <div style={{ fontFamily: "'Jost', sans-serif" }} className="bg-[#FCEBEB] border border-[#E24B4A] px-4 py-3 mb-5 text-[0.78rem] text-[#A32D2D]">
-              {error}
-            </div>
-          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
@@ -232,11 +241,11 @@ const Register = () => {
 
             {/* Submit */}
             <button
-              type="submit" disabled={isLoading}
+              type="submit" disabled={loading}
               style={{ fontFamily: "'Jost', sans-serif" }}
               className="w-full py-4 bg-[#1A1208] text-white text-[0.82rem] tracking-[0.15em] font-semibold flex items-center justify-center gap-2 hover:bg-[#C9A84C] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Creating Account...' : <>Create Account →</>}
+              {loading ? 'Creating Account...' : <>Create Account →</>}
             </button>
 
           </form>

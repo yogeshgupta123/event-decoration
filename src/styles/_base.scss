@@ -106,6 +106,14 @@
     color: $gold-primary;
   }
 
+  .scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
   .section-padding {
     padding: $spacing-4xl 0;
 
