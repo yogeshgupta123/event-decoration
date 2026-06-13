@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FiPackage, FiUser, FiHeart, FiClock, FiCheck, FiX, FiCalendar, FiMapPin, FiEdit, FiLogOut } from 'react-icons/fi'
+import { FiPackage, FiUser, FiHeart, FiCalendar, FiMapPin, FiEdit, FiLogOut } from 'react-icons/fi'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { logout } from '../store/authSlice'
 
@@ -12,7 +12,6 @@ const myBookings = [
   { id: 'TM-2024-003', title: 'Corporate Stage Backdrop', category: 'Corporate', date: '2024-10-05', venue: 'Taj Palace, Delhi', price: 184999, status: 'cancelled', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=200' },
 ]
 
-const tabs = ['My Bookings', 'Profile', 'Wishlist']
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   confirmed: { label: 'Confirmed', color: '#1D9E75', bg: '#E8F8F2' },

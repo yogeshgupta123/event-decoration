@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState } from 'react'
-import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart, FiShoppingBag, FiCheck, FiChevronLeft, FiPlus, FiMinus } from 'react-icons/fi'
+import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart, FiShoppingBag, FiCheck, FiChevronLeft } from 'react-icons/fi'
 import { useAppDispatch } from '../store/hooks'
 import { addToCart } from '../store/cartSlice'
 import RelatedSlider from '../components/home/RelatedSlider'

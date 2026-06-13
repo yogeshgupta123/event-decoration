@@ -4,7 +4,7 @@ import MegaMenu from './MegaMenu'
 import { useAppSelector } from '../../store/hooks'
 import {
   FiSearch, FiHelpCircle, FiUser, FiShoppingBag,
-  FiMenu, FiX, FiChevronRight, FiMapPin, FiChevronDown,
+  FiMenu, FiX,  FiMapPin, FiChevronDown,
   FiLogIn, FiUserPlus, FiPackage, FiPhone, FiHelpCircle as FiHelp
 } from 'react-icons/fi'
 
@@ -365,7 +365,6 @@ const Navbar = () => {
           <MegaMenu
             categories={navLinks.find((l) => l.label === activeMenu)?.categories || []}
             label={activeMenu}
-            to={navLinks.find((l) => l.label === activeMenu)?.to || '/services'}
           />
         )}
       </nav>
