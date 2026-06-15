@@ -18,11 +18,13 @@ import WhyChooseUs from '../components/home/WhyChooseUs'
 import FlowerPicker from '../components/home/FlowerPicker'
 import PersonaliseSection from '../components/home/PersonaliseSection'
 import FeaturedExperiences from '../components/home/FeaturedExperiences'
+import QuickCategories from '../components/home/QuickCategories'
 
 function Home() {
   return (
     <div>
       <Hero />
+      <QuickCategories/>
       <StatsBar/>
        <TrustBar />
       <Occasions/>
