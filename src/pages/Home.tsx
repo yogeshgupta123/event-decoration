@@ -8,9 +8,10 @@ import Hero from '../components/home/Hero'
 import Occasions from '../components/home/Occasions'
 import PlanningSection from '../components/home/PlanningSection'
 import StatsBar from '../components/home/StatsBar'
+import TrustBar from '../components/home/TrustBar'
+
 import Testimonials from '../components/home/Testimonials'
 import TrendingPackages from '../components/home/TrendingPackages'
-import VendorNetwork from '../components/home/VendorNetwork'
 import WhyChooseUs from '../components/home/WhyChooseUs'
 
 function Home() {
@@ -18,12 +19,12 @@ function Home() {
     <div>
       <Hero />
       <StatsBar/>
+       <TrustBar />
       <Occasions/>
       <CategorySlider/>
       <TrendingPackages/>
       <PlanningSection/>
       <WhyChooseUs/>
-      <VendorNetwork/>
       <Testimonials/>
       <FAQ/>
       <Gallery/>

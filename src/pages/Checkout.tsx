@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiCalendar, FiMapPin, FiUser, FiPhone, FiMail, FiCheck, FiChevronRight, FiLock } from 'react-icons/fi'
-import { useAppSelector } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { clearCart } from '../store/cartSlice'
+
+
 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
@@ -23,12 +26,34 @@ const Checkout = () => {
     paymentMode: 'full',
   })
 
+  const navigate = useNavigate()
+const dispatch = useAppDispatch()
   const cartItems = useAppSelector((state) => state.cart.items)
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const gst = Math.round(subtotal * 0.18)
   const convenienceFee = 500
   const total = subtotal + gst + convenienceFee
   const advance = Math.round(total * 0.3)
+
+  // ============================================
+// CONFIRM & PAY — booking ID banao, cart clear karo,
+// confirmation page pe location.state ke saath bhejo
+// ============================================
+const handleConfirmPay = () => {
+  const bookingId = `TM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+
+  dispatch(clearCart())
+
+  navigate(`/order-confirmed/${bookingId}`, {
+    state: {
+      total,
+      eventDate: form.eventDate,
+      eventTime: form.eventTime,
+      venue: form.venue,
+      city: form.city,
+    },
+  })
+}
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -221,9 +246,13 @@ const Checkout = () => {
                     <button onClick={() => setCurrentStep(1)} style={{ fontFamily: "'Jost', sans-serif" }} className="flex-1 border border-[#EDE0C4] text-[#5C4A1E] rounded-full py-4 text-[0.78rem] tracking-[0.15em] uppercase font-semibold hover:border-[#C9A84C] transition-colors">
                       Back
                     </button>
-                    <button style={{ fontFamily: "'Jost', sans-serif" }} className="flex-1 bg-[#C9A84C] text-white rounded-full py-4 text-[0.78rem] tracking-[0.15em] uppercase font-semibold hover:bg-[#1A1208] transition-colors flex items-center justify-center gap-2">
-                      <FiLock size={14} /> Confirm & Pay
-                    </button>
+                    <button
+  onClick={handleConfirmPay}
+  style={{ fontFamily: "'Jost', sans-serif" }}
+  className="flex-1 bg-[#C9A84C] text-white rounded-full py-4 text-[0.78rem] tracking-[0.15em] uppercase font-semibold hover:bg-[#1A1208] transition-colors flex items-center justify-center gap-2"
+>
+  <FiLock size={14} /> Confirm & Pay
+</button>
                   </div>
                 </div>
               )}

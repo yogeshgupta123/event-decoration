@@ -14,6 +14,17 @@ import {
 // ============================================
 const navLinks = [
   {
+  label: 'Experiences',
+  emoji: '✨',
+  to: '/experiences',
+  categories: [
+    { title: 'Romantic', items: ['Candlelight Dinner', 'Rooftop Dinner', 'Private Beach Dinner', 'Anniversary Special'] },
+    { title: 'Surprises', items: ['Room Decoration', 'Balloon Surprise', 'Photo Wall Setup', 'Cake Surprise'] },
+    { title: 'Adventure', items: ['City Exploration', 'Hot Air Balloon', 'Trekking Date', 'Bike Ride'] },
+    { title: 'Wellness', items: ['Couple Spa', 'Solo Wellness Day', 'Yoga Retreat', 'Meditation'] },
+  ],
+},
+  {
     label: 'Father\'s Day',
     emoji: '👨',
     to: '/services?category=FathersDay',
@@ -361,12 +372,14 @@ const Navbar = () => {
         </div>
 
         {/* MEGA MENU */}
-        {activeMenu && (
-          <MegaMenu
-            categories={navLinks.find((l) => l.label === activeMenu)?.categories || []}
-            label={activeMenu}
-          />
-        )}
+   {activeMenu && (
+  <MegaMenu
+    categories={navLinks.find((l) => l.label === activeMenu)?.categories || []}
+    label={activeMenu}
+    to={navLinks.find((l) => l.label === activeMenu)?.to || '/services'}
+  />
+)}
+        
       </nav>
 
       {/* OVERLAY */}

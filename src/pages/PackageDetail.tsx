@@ -1,9 +1,11 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState } from 'react'
-import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart, FiShoppingBag, FiCheck, FiChevronLeft } from 'react-icons/fi'
-import { useAppDispatch } from '../store/hooks'
-import { addToCart } from '../store/cartSlice'
+import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart,  FiCheck, FiChevronLeft } from 'react-icons/fi'
+
+
 import RelatedSlider from '../components/home/RelatedSlider'
+import ReviewsSection from '../components/ui/ReviewsSection'
+
 
 const allPackages = [
   { id: 1, title: 'Royal Rose Terrace', category: 'Wedding', price: 154999, image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800', badge: 'Best Seller', rating: 4.9, reviews: 124, duration: '8-10 hours', guests: 'Up to 500', location: 'Pan India', description: 'A breathtaking royal-themed wedding decoration featuring fresh roses, gold accents, and ornate stage setup. Perfect for a grand celebration that will be remembered for years.', includes: ['Stage & Mandap Setup', 'Floral Arch Entrance', 'Table Centerpieces (50 tables)', 'Aisle Decoration', 'Photo Wall', 'Fairy Light Ceiling', 'Dedicated Event Manager'], images: ['https://images.unsplash.com/photo-1519741497674-611481863552?w=400', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400', 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400'] },
@@ -25,20 +27,15 @@ const packageAddons = [
   { id: 505, title: 'Photo Booth Corner', price: 4499, image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=200' },
 ]
 
-const testimonials = [
-  { name: 'Priya Sharma', text: 'Absolutely stunning setup! Everything was exactly as described.', rating: 5 },
-  { name: 'Rahul Mehta', text: 'Professional team, on-time delivery. Highly recommend!', rating: 5 },
-  { name: 'Sneha Kapoor', text: 'Beautiful decoration, worth every penny.', rating: 4 },
-]
+
 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
 const PackageDetail = () => {
+
   const { id } = useParams()
-  const dispatch = useAppDispatch()
   const [activeImage, setActiveImage] = useState(0)
   const [wishlist, setWishlist] = useState(false)
-  const [added, setAdded] = useState(false)
   const [selectedAddons, setSelectedAddons] = useState<number[]>([])
 
   const pkg = allPackages.find((p) => p.id === Number(id))
@@ -63,14 +60,7 @@ const PackageDetail = () => {
   const selectedAddonItems = packageAddons.filter((a) => selectedAddons.includes(a.id))
   const addonsTotal = selectedAddonItems.reduce((sum, a) => sum + a.price, 0)
 
-  const handleAddToCart = () => {
-    dispatch(addToCart({ id: pkg.id, title: pkg.title, category: pkg.category, price: pkg.price + addonsTotal, image: pkg.image }))
-    selectedAddonItems.forEach((addon) => {
-      dispatch(addToCart({ id: addon.id, title: addon.title, category: 'Add-on', price: addon.price, image: addon.image }))
-    })
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
-  }
+  
 
   return (
     <div className="bg-[#FDFAF4] pb-0">
@@ -89,10 +79,9 @@ const PackageDetail = () => {
       </div>
 
       <div className="container mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:items-start">
           {/* LEFT — Images */}
-          <div>
+          <div className="lg:sticky lg:top-[90px]">
             <div className="relative h-[360px] md:h-[440px] rounded-2xl overflow-hidden mb-4 shadow-[0_8px_40px_rgba(26,18,8,0.1)]">
               <img src={pkg.images[activeImage]} alt={pkg.title} className="w-full h-full object-cover" />
               {pkg.badge && (
@@ -126,15 +115,14 @@ const PackageDetail = () => {
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] md:text-[2.6rem] text-[#1A1208] font-semibold leading-tight mb-4">{pkg.title}</h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="flex items-center gap-1">
+<button onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 mb-5 hover:opacity-75 transition-opacity">              <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <FiStar key={i} size={14} fill={i < Math.floor(pkg.rating) ? '#D9776B' : 'none'} color={i < Math.floor(pkg.rating) ? '#D9776B' : '#EDE0C4'} />
                 ))}
               </div>
               <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#1A1208] font-semibold">{pkg.rating}</span>
               <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A]">({pkg.reviews} reviews)</span>
-            </div>
+            </button>
 
             {/* Quick Info */}
             <div className="grid grid-cols-3 gap-3 mb-6">
@@ -213,7 +201,7 @@ const PackageDetail = () => {
             </div>
 
             {/* Price + CTA */}
-            <div className="bg-white rounded-2xl p-5 shadow-[0_4px_16px_rgba(26,18,8,0.06)]">
+            {/* <div className="bg-white rounded-2xl p-5 shadow-[0_4px_16px_rgba(26,18,8,0.06)]">
               <div className="flex items-end justify-between mb-4">
                 <div>
                   <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A] mb-0.5">Total</p>
@@ -244,27 +232,12 @@ const PackageDetail = () => {
                   Book Now
                 </Link>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* REVIEWS */}
-        <div className="mt-14">
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.8rem] text-[#1A1208] font-semibold mb-8">Client Reviews</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 shadow-[0_4px_16px_rgba(26,18,8,0.06)]">
-                <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, j) => (
-                    <FiStar key={j} size={13} fill={j < t.rating ? '#D9776B' : 'none'} color={j < t.rating ? '#D9776B' : '#EDE0C4'} />
-                  ))}
-                </div>
-                <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1rem] text-[#1A1208] italic leading-relaxed mb-4">"{t.text}"</p>
-                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A] font-semibold">— {t.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      <ReviewsSection/>
       </div>
 
       {/* RELATED PACKAGES SLIDER */}

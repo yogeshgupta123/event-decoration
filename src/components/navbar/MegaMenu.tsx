@@ -8,28 +8,16 @@ interface Category {
 interface MegaMenuProps {
   categories: Category[]
   label: string
+  to: string
 }
 
-// ============================================
-// Mega menu ka label aur Services page ka
-// category match karne ke liye
-// ============================================
-const categoryMap: Record<string, string> = {
-  Weddings: 'Wedding',
-  Birthday: 'Birthday',
-  Corporate: 'Corporate',
-  Engagement: 'Engagement',
-}
-
-const MegaMenu = ({ categories, label }: MegaMenuProps) => {
+const MegaMenu = ({ categories, label, to }: MegaMenuProps) => {
   return (
     <div
       className="absolute left-0 right-0 bg-white border-t border-[#EDE0C4]"
       style={{ boxShadow: '0 20px 40px rgba(201,168,76,0.12)' }}
     >
       <div className="container mx-auto px-8 py-12">
-
-        {/* Title */}
         <div className="mb-10">
           <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.6rem', color: '#C9A84C', fontWeight: 600 }}>
             {label}
@@ -37,7 +25,6 @@ const MegaMenu = ({ categories, label }: MegaMenuProps) => {
           <div className="w-12 h-[1px] bg-[#C9A84C] mt-2" />
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-4 gap-12">
           {categories.map((category) => (
             <div key={category.title}>
@@ -64,7 +51,6 @@ const MegaMenu = ({ categories, label }: MegaMenuProps) => {
           ))}
         </div>
 
-        {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-[#EDE0C4] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-1 h-1 rounded-full bg-[#C9A84C]" />
@@ -73,11 +59,11 @@ const MegaMenu = ({ categories, label }: MegaMenuProps) => {
             </p>
           </div>
           <Link
-            to={`/services?category=${categoryMap[label] || label}`}
+            to={to}
             className="text-[0.7rem] text-[#C9A84C] tracking-widest uppercase hover:text-[#9A7A2E] transition-colors flex items-center gap-2"
             style={{ fontFamily: "'Jost', sans-serif" }}
           >
-            View All {label} Services →
+            View All {label} →
           </Link>
         </div>
       </div>

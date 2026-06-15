@@ -1,0 +1,286 @@
+import { useState } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { FiStar, FiHeart, FiShoppingBag, FiCheck, FiChevronLeft, FiMinus, FiPlus, FiTruck, FiShield, FiZap } from 'react-icons/fi'
+import { useAppDispatch } from '../store/hooks'
+import { addToCart, increaseQuantity } from '../store/cartSlice'
+import { showToast } from '../store/uiSlice'
+import { shopItems } from '../data/shopItems'
+import { StaggerContainer, StaggerItem } from '../components/animations/StaggerContainer'
+import Slider from '../components/ui/Slider'
+import ReviewsSection from '../components/ui/ReviewsSection'
+
+const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
+
+const ShopDetail = () => {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+  const item = shopItems.find((p) => p.id === Number(id))
+
+  const [activeImage, setActiveImage] = useState(0)
+  const [quantity, setQuantity] = useState(1)
+  const [selectedAddOns, setSelectedAddOns] = useState<number[]>([])
+  const [wishlist, setWishlist] = useState(false)
+
+  if (!item) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#FDFAF4]">
+        <div className="text-center">
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] text-[#1A1208] mb-4">Product not found</h2>
+          <Link to="/shop" style={{ fontFamily: "'Jost', sans-serif" }} className="text-[#C9A84C] underline">Back to Shop</Link>
+        </div>
+      </div>
+    )
+  }
+
+  const toggleAddOn = (addOnId: number) => {
+    if (selectedAddOns.includes(addOnId)) {
+      setSelectedAddOns(selectedAddOns.filter((aid) => aid !== addOnId))
+    } else {
+      setSelectedAddOns([...selectedAddOns, addOnId])
+    }
+  }
+
+  const addOnsTotal = item.addOns
+    .filter((a) => selectedAddOns.includes(a.id))
+    .reduce((sum, a) => sum + a.price, 0)
+
+  const totalPrice = item.price * quantity + addOnsTotal
+
+  // ============================================
+  // SHARED LOGIC — cart mein sab kuch daal do
+  // Add to Cart aur Buy Now dono use karenge
+  // ============================================
+  const addItemsToCart = () => {
+    dispatch(addToCart({ id: item.id, title: item.title, category: item.category, price: item.price, image: item.image }))
+    for (let i = 1; i < quantity; i++) dispatch(increaseQuantity(item.id))
+    selectedAddOns.forEach((addOnId) => {
+      const addOn = item.addOns.find((a) => a.id === addOnId)
+      if (addOn) dispatch(addToCart({ id: addOn.id, title: addOn.name, category: 'Add-on', price: addOn.price, image: addOn.image }))
+    })
+  }
+
+  const handleAddToCart = () => {
+    addItemsToCart()
+    dispatch(showToast({ message: `${item.title} added to cart! 🛍️` }))
+  }
+
+  const handleBuyNow = () => {
+    addItemsToCart()
+    navigate('/checkout')
+  }
+
+  // ============================================
+  // RATING CLICK — reviews section tak scroll karo
+  // ============================================
+  const scrollToReviews = () => {
+    document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const relatedItems = shopItems.filter((p) => p.category === item.category && p.id !== item.id).slice(0, 4)
+
+  return (
+    <div className="bg-[#FDFAF4] pb-28 md:pb-24">
+
+      {/* BREADCRUMB */}
+      <div className="bg-white border-b border-[#EDE0C4] py-4">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center gap-2">
+            <Link to="/shop" style={{ fontFamily: "'Jost', sans-serif" }} className="flex items-center gap-1 text-[0.78rem] text-[#9E8A6A] hover:text-[#C9A84C] transition-colors">
+              <FiChevronLeft size={14} /> Shop
+            </Link>
+            <span className="text-[#EDE0C4]">/</span>
+            <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A]">{item.category}</span>
+            <span className="text-[#EDE0C4]">/</span>
+            <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#D9776B]">{item.title}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-6 py-10">
+        {/* ============================================
+            lg:items-start — important! warna sticky kaam nahi karega
+        ============================================ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:items-start">
+
+          {/* ============================================
+              LEFT — STICKY (lg:sticky lg:top-[90px])
+              scroll karne par yahin "chipka" rahega
+          ============================================ */}
+          <div className="lg:sticky lg:top-[90px]">
+            <div className="relative h-[360px] md:h-[440px] rounded-2xl overflow-hidden mb-4 shadow-[0_8px_40px_rgba(26,18,8,0.1)]">
+              <img src={item.images[activeImage]} alt={item.title} className="w-full h-full object-cover" />
+              <button
+                onClick={() => setWishlist(!wishlist)}
+                className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${wishlist ? 'bg-[#D9776B] text-white' : 'bg-white/90 text-[#1A1208]'}`}
+              >
+                <FiHeart size={16} fill={wishlist ? 'white' : 'none'} />
+              </button>
+            </div>
+
+            <div className="flex gap-3 mb-6">
+              {item.images.map((img, i) => (
+                <button key={i} onClick={() => setActiveImage(i)} className={`h-[80px] flex-1 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-[#C9A84C]' : 'border-transparent'}`}>
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-xl p-3 flex items-center gap-2.5 shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
+                <FiTruck size={18} color="#C9A84C" />
+                <div>
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-semibold">Same Day Delivery</p>
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A]">Order before 4 PM</p>
+                </div>
+              </div>
+              <div className="bg-white rounded-xl p-3 flex items-center gap-2.5 shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
+                <FiShield size={18} color="#C9A84C" />
+                <div>
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-semibold">Quality Assured</p>
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A]">100% Fresh Products</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ============================================
+              RIGHT — Scrollable content
+          ============================================ */}
+          <div>
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#D9776B] tracking-[0.25em] uppercase font-semibold mb-2">
+              {item.category} · {item.subcategory}
+            </p>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] md:text-[2.6rem] text-[#1A1208] font-semibold leading-tight mb-4">
+              {item.title}
+            </h1>
+
+            {/* Rating — clickable, reviews tak le jaayega */}
+            <button onClick={scrollToReviews} className="flex items-center gap-3 mb-5 hover:opacity-75 transition-opacity">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <FiStar key={i} size={14} fill={i < Math.floor(item.rating) ? '#D9776B' : 'none'} color={i < Math.floor(item.rating) ? '#D9776B' : '#EDE0C4'} />
+                ))}
+              </div>
+              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#1A1208] font-semibold">{item.rating}</span>
+              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A] underline">({item.reviews} reviews)</span>
+            </button>
+
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#5C4A1E] leading-relaxed mb-6">
+              {item.description}
+            </p>
+
+            <div className="flex items-baseline gap-2 mb-6">
+              <span style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] text-[#1A1208] font-bold">{formatPrice(item.price)}</span>
+              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#9E8A6A]">+ delivery charges</span>
+            </div>
+
+            {/* Quantity */}
+            <div className="mb-6">
+              <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">Quantity</h3>
+              <div className="flex items-center gap-3 bg-white rounded-full px-4 py-2 w-fit shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
+                <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[#FDFAF4] transition-colors"><FiMinus size={13} /></button>
+                <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.9rem] text-[#1A1208] font-semibold w-6 text-center">{quantity}</span>
+                <button onClick={() => setQuantity((q) => q + 1)} className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-[#FDFAF4] transition-colors"><FiPlus size={13} /></button>
+              </div>
+            </div>
+
+            {/* ============================================
+                ADD-ONS — ab SLIDER mein, kam space lega
+            ============================================ */}
+            <div className="mb-6">
+              <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">
+                Make It Extra Special — Add Ons
+              </h3>
+              <Slider>
+                {item.addOns.map((addOn) => {
+                  const isSelected = selectedAddOns.includes(addOn.id)
+                  return (
+                    <label
+                      key={addOn.id}
+                      className={`shrink-0 w-[150px] flex flex-col gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${isSelected ? 'border-[#C9A84C] bg-[#FDFAF4]' : 'border-[#EDE0C4] bg-white'}`}
+                    >
+                      <input type="checkbox" checked={isSelected} onChange={() => toggleAddOn(addOn.id)} className="sr-only" />
+                      <div className="relative w-full h-[80px] rounded-lg overflow-hidden">
+                        <img src={addOn.image} alt={addOn.name} className="w-full h-full object-cover" />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-[#C9A84C]/30 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-full bg-[#C9A84C] flex items-center justify-center">
+                              <FiCheck size={14} color="white" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-medium leading-snug">{addOn.name}</p>
+                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#C9A84C] font-semibold">+ {formatPrice(addOn.price)}</p>
+                    </label>
+                  )
+                })}
+              </Slider>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ============================================
+            REVIEWS — with real customer photos
+        ============================================ */}
+        <ReviewsSection />
+
+        {/* RELATED PRODUCTS */}
+        {relatedItems.length > 0 && (
+          <div className="mt-16">
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.8rem] text-[#1A1208] font-semibold mb-8">You May Also Like</h2>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedItems.map((related) => (
+                <StaggerItem key={related.id}>
+                  <Link to={`/shop/${related.id}`} className="group block bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300">
+                    <div className="relative h-[160px] overflow-hidden">
+                      <img src={related.image} alt={related.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </div>
+                    <div className="p-4">
+                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1rem] text-[#1A1208] font-semibold mb-1 leading-snug">{related.title}</h3>
+                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.9rem] text-[#C9A84C] font-semibold">{formatPrice(related.price)}</p>
+                    </div>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        )}
+      </div>
+
+      {/* ============================================
+          FIXED BOTTOM BAR — hamesha visible
+          mobile pe BottomNav (60px) ke upar
+      ============================================ */}
+      <div className="fixed bottom-[60px] md:bottom-0 left-0 right-0 z-[80] bg-white border-t border-[#EDE0C4] shadow-[0_-4px_20px_rgba(26,18,8,0.08)]">
+        <div className="container mx-auto px-6 py-3 flex items-center justify-between gap-3">
+          <div>
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.6rem] text-[#9E8A6A] uppercase tracking-wider">Total</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.3rem] text-[#1A1208] font-bold">{formatPrice(totalPrice)}</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddToCart}
+              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="flex items-center gap-1.5 border-2 border-[#C9A84C] text-[#C9A84C] rounded-full px-4 sm:px-6 py-3 text-[0.7rem] sm:text-[0.75rem] tracking-[0.1em] uppercase font-semibold hover:bg-[#FDFAF4] transition-colors"
+            >
+              <FiShoppingBag size={14} /> <span className="hidden sm:inline">Add to</span> Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="flex items-center gap-1.5 bg-[#C9A84C] text-white rounded-full px-4 sm:px-6 py-3 text-[0.7rem] sm:text-[0.75rem] tracking-[0.1em] uppercase font-semibold hover:bg-[#1A1208] transition-colors"
+            >
+              <FiZap size={14} /> Buy Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ShopDetail

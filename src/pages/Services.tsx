@@ -1,3 +1,4 @@
+import { showToast } from '../store/uiSlice'
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { FiChevronDown, FiHeart, FiMapPin, FiShoppingBag } from 'react-icons/fi'
@@ -31,7 +32,7 @@ const Services = () => {
   // ============================================
   const [searchParams] = useSearchParams()
   const categoryFromUrl = searchParams.get('category')
-
+const searchQuery = (searchParams.get('search') || '').toLowerCase()
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categoryFromUrl ? [categoryFromUrl] : []
   )
@@ -56,11 +57,12 @@ const Services = () => {
     }
   }
 
-  let filteredPackages = allPackages.filter((pkg) => {
-    const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(pkg.category)
-    const priceMatch = pkg.price <= maxPrice
-    return categoryMatch && priceMatch
-  })
+ let filteredPackages = allPackages.filter((pkg) => {
+  const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(pkg.category)
+  const priceMatch = pkg.price <= maxPrice
+  const searchMatch = !searchQuery || pkg.title.toLowerCase().includes(searchQuery)
+  return categoryMatch && priceMatch && searchMatch
+})
 
   if (sortBy === 'low-high') {
     filteredPackages = [...filteredPackages].sort((a, b) => a.price - b.price)
@@ -255,6 +257,8 @@ const Services = () => {
                               price: pkg.price,
                               image: pkg.image,
                             }))
+                              dispatch(showToast({ message: `${pkg.title} added to cart! 🛒` }))
+
                           }}
                           style={{ fontFamily: "'Jost', sans-serif" }}
                           className="flex items-center gap-1.5 bg-[#1A1208] text-white rounded-full px-4 py-2 text-[0.68rem] tracking-[0.1em] uppercase font-medium hover:bg-[#C9A84C] transition-colors"
