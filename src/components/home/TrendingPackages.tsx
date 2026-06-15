@@ -34,8 +34,15 @@ const TrendingPackages = () => {
         <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {packages.map((pkg) => (
             <StaggerItem key={pkg.id}>
-              <div className="group bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300 h-full">
 
+              {/* ============================================
+                  POORA CARD EK LINK HAI
+                  /package/:id pe navigate karega
+              ============================================ */}
+              <Link
+                to={`/package/${pkg.id}`}
+                className="group block bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300 h-full"
+              >
                 <div className="relative h-[220px] overflow-hidden">
                   <img
                     src={pkg.image}
@@ -69,7 +76,8 @@ const TrendingPackages = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
+
             </StaggerItem>
           ))}
         </StaggerContainer>
