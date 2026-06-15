@@ -1,10 +1,12 @@
-import ToastContainer from './components/ui/ToastContainer'
-import WhatsAppButton from './components/layout/WhatsAppButton'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Navbar from './components/navbar/Navbar'
 import Footer from './components/home/Footer'
 import PageTransition from './components/animations/PageTransition'
+import ScrollToTop from './components/ScrollToTop'
+import ToastContainer from './components/ui/ToastContainer'
+import WhatsAppButton from './components/layout/WhatsAppButton'
+import BottomNav from './components/layout/BottomNav'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -19,9 +21,8 @@ import Shop from './pages/Shop'
 import ShopDetail from './pages/ShopDetail'
 import Experiences from './pages/Experiences'
 import ExperienceDetail from './pages/ExperienceDetail'
-import NotFound from './pages/NotFound'
-import BottomNav from './components/layout/BottomNav'
 import OrderConfirmation from './pages/OrderConfirmation'
+import NotFound from './pages/NotFound'
 
 const AnimatedRoutes = () => {
   const location = useLocation()
@@ -43,8 +44,9 @@ const AnimatedRoutes = () => {
         <Route path="/shop/:id" element={<PageTransition><ShopDetail /></PageTransition>} />
         <Route path="/experiences" element={<PageTransition><Experiences /></PageTransition>} />
         <Route path="/experience/:id" element={<PageTransition><ExperienceDetail /></PageTransition>} />
-<Route path="/order-confirmed/:id" element={<PageTransition><OrderConfirmation /></PageTransition>} />
-        {/* ✅ 404 — har route try karne ke baad, agar kuch match na ho */}
+        <Route path="/order-confirmed/:id" element={<PageTransition><OrderConfirmation /></PageTransition>} />
+
+        {/* ✅ HAMESHA SABSE LAST */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
@@ -54,13 +56,13 @@ const AnimatedRoutes = () => {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Navbar />
-       <ToastContainer />
+      <ToastContainer />
       <AnimatedRoutes />
       <Footer />
-       <BottomNav />
-       <WhatsAppButton/>
-      {/* Mobile pe bottom nav ke neeche space — content hide na ho */}
+      <WhatsAppButton />
+      <BottomNav />
       <div className="h-[60px] md:hidden" />
     </BrowserRouter>
   )

@@ -1,42 +1,41 @@
-import { useParams, Link } from 'react-router-dom'
 import { useState } from 'react'
-import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart,  FiCheck, FiChevronLeft } from 'react-icons/fi'
-
-
-import RelatedSlider from '../components/home/RelatedSlider'
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart, FiCheck, FiChevronLeft } from 'react-icons/fi'
+import { useAppDispatch } from '../store/hooks'
+import { addToCart } from '../store/cartSlice'
+import { showToast } from '../store/uiSlice'
+import { shopItems } from '../data/shopItems'
+import Slider from '../components/ui/Slider'
 import ReviewsSection from '../components/ui/ReviewsSection'
-
 
 const allPackages = [
   { id: 1, title: 'Royal Rose Terrace', category: 'Wedding', price: 154999, image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800', badge: 'Best Seller', rating: 4.9, reviews: 124, duration: '8-10 hours', guests: 'Up to 500', location: 'Pan India', description: 'A breathtaking royal-themed wedding decoration featuring fresh roses, gold accents, and ornate stage setup. Perfect for a grand celebration that will be remembered for years.', includes: ['Stage & Mandap Setup', 'Floral Arch Entrance', 'Table Centerpieces (50 tables)', 'Aisle Decoration', 'Photo Wall', 'Fairy Light Ceiling', 'Dedicated Event Manager'], images: ['https://images.unsplash.com/photo-1519741497674-611481863552?w=400', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400', 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400'] },
-  { id: 2, title: 'Golden Candle Vale', category: 'Wedding', price: 124999, image: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=800', badge: null, rating: 4.8, reviews: 98, duration: '6-8 hours', guests: 'Up to 300', location: 'Pan India', description: 'An intimate candlelit wedding setup with golden accents and warm floral arrangements.', includes: ['Candle Arch Stage', 'Golden Draping', 'Floral Centerpieces', 'Entrance Gate', 'Couple Seating', 'Ambient Lighting'], images: ['https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=400', 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400', 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400'] },
-  { id: 3, title: 'Balloon Wonderland', category: 'Birthday', price: 24999, image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800', badge: null, rating: 4.7, reviews: 76, duration: '3-4 hours', guests: 'Up to 100', location: 'Pan India', description: 'A vibrant and colorful balloon wonderland setup for the most fun birthday celebration ever.', includes: ['Balloon Arch', 'Backdrop Setup', 'Table Decoration', 'Cake Table', 'Photo Booth Corner'], images: ['https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400', 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400'] },
-  { id: 4, title: 'Corporate Stage Backdrop', category: 'Corporate', price: 184999, image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800', badge: 'Premium', rating: 4.9, reviews: 210, duration: '8-12 hours', guests: 'Up to 1000', location: 'Pan India', description: 'Professional corporate event setup with LED backdrop, branded elements, and premium stage design.', includes: ['LED Stage Backdrop', 'Branded Podium', 'Press Conference Setup', 'VIP Lounge Area', 'Registration Desk', 'Directional Signage', 'Technical Team Support'], images: ['https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400', 'https://images.unsplash.com/photo-1561128290-006fc5e4ce9b?w=400', 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400'] },
-  { id: 5, title: 'Ring Ceremony Decor', category: 'Engagement', price: 99999, image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800', badge: null, rating: 4.8, reviews: 88, duration: '5-6 hours', guests: 'Up to 200', location: 'Pan India', description: 'Elegant engagement ceremony decoration with floral backdrop, fairy lights, and luxurious seating.', includes: ['Floral Stage Backdrop', 'Couple Seating Arch', 'Ring Exchange Platform', 'Guest Seating Decor', 'Entrance Flowers', 'Photo Corner'], images: ['https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=400', 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400', 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400'] },
-  { id: 6, title: 'Floral Mandap Setup', category: 'Wedding', price: 89999, image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=800', badge: null, rating: 4.7, reviews: 65, duration: '6-8 hours', guests: 'Up to 400', location: 'Pan India', description: 'Beautiful floral mandap with fresh flowers and elegant draping for a traditional yet modern wedding.', includes: ['Floral Mandap', 'Stage Setup', 'Floral Path', 'Seating Decor', 'Backdrop Design'], images: ['https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400', 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400', 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400'] },
+  { id: 2, title: 'Golden Candle Vale', category: 'Wedding', price: 124999, image: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=800', badge: null, rating: 4.8, reviews: 98, duration: '6-8 hours', guests: 'Up to 300', location: 'Pan India', description: 'An intimate candlelit wedding setup with golden accents and warm floral arrangements. Ideal for romantic, close-knit celebrations.', includes: ['Candle Arch Stage', 'Golden Draping', 'Floral Centerpieces', 'Entrance Gate', 'Couple Seating', 'Ambient Lighting'], images: ['https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=400', 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400', 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400'] },
+  { id: 3, title: 'Balloon Wonderland', category: 'Birthday', price: 24999, image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800', badge: null, rating: 4.7, reviews: 76, duration: '3-4 hours', guests: 'Up to 100', location: 'Pan India', description: 'A vibrant and colorful balloon wonderland setup for the most fun birthday celebration ever. Great for kids and adults alike.', includes: ['Balloon Arch', 'Backdrop Setup', 'Table Decoration', 'Cake Table', 'Photo Booth Corner'], images: ['https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400', 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400'] },
+  { id: 4, title: 'Corporate Stage Backdrop', category: 'Corporate', price: 184999, image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800', badge: 'Premium', rating: 4.9, reviews: 210, duration: '8-12 hours', guests: 'Up to 1000', location: 'Pan India', description: 'Professional corporate event setup with LED backdrop, branded elements, and premium stage design. Perfect for product launches, award nights, and conferences.', includes: ['LED Stage Backdrop', 'Branded Podium', 'Press Conference Setup', 'VIP Lounge Area', 'Registration Desk', 'Directional Signage', 'Technical Team Support'], images: ['https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400', 'https://images.unsplash.com/photo-1561128290-006fc5e4ce9b?w=400', 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400'] },
+  { id: 5, title: 'Ring Ceremony Decor', category: 'Engagement', price: 99999, image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800', badge: null, rating: 4.8, reviews: 88, duration: '5-6 hours', guests: 'Up to 200', location: 'Pan India', description: 'Elegant engagement ceremony decoration with floral backdrop, fairy lights, and luxurious seating for the couple.', includes: ['Floral Stage Backdrop', 'Couple Seating Arch', 'Ring Exchange Platform', 'Guest Seating Decor', 'Entrance Flowers', 'Photo Corner'], images: ['https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=400', 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400', 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=400'] },
 ]
 
 // ============================================
-// ADDON ITEMS — package detail pe dikhenge
+// DECORATION ADD-ONS — booking ke saath extra services
 // ============================================
-const packageAddons = [
-  { id: 501, title: 'Extra Balloon Arch', price: 1999, image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=200' },
-  { id: 502, title: 'Neon Welcome Sign', price: 3499, image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=200' },
-  { id: 503, title: 'Flower Petal Path', price: 2799, image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=200' },
-  { id: 504, title: 'Premium Candle Setup', price: 1599, image: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=200' },
-  { id: 505, title: 'Photo Booth Corner', price: 4499, image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=200' },
+const decorationAddOns = [
+  { id: 8001, name: 'Extra Fairy Lights', price: 999, image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=200' },
+  { id: 8002, name: 'Live Photography (2hrs)', price: 2999, image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=200' },
+  { id: 8003, name: 'Welcome Drinks Setup', price: 1499, image: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=200' },
+  { id: 8004, name: 'Photo Booth Corner', price: 1999, image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=200' },
+  { id: 8005, name: 'Live Acoustic Music', price: 3499, image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=200' },
 ]
-
-
 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
 const PackageDetail = () => {
-
   const { id } = useParams()
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [activeImage, setActiveImage] = useState(0)
   const [wishlist, setWishlist] = useState(false)
-  const [selectedAddons, setSelectedAddons] = useState<number[]>([])
+  const [selectedAddOns, setSelectedAddOns] = useState<number[]>([])
 
   const pkg = allPackages.find((p) => p.id === Number(id))
 
@@ -51,19 +50,43 @@ const PackageDetail = () => {
     )
   }
 
-  const toggleAddon = (addonId: number) => {
-    setSelectedAddons((prev) =>
-      prev.includes(addonId) ? prev.filter((id) => id !== addonId) : [...prev, addonId]
-    )
+  const toggleAddOn = (addOnId: number) => {
+    setSelectedAddOns(selectedAddOns.includes(addOnId) ? selectedAddOns.filter((a) => a !== addOnId) : [...selectedAddOns, addOnId])
   }
 
-  const selectedAddonItems = packageAddons.filter((a) => selectedAddons.includes(a.id))
-  const addonsTotal = selectedAddonItems.reduce((sum, a) => sum + a.price, 0)
+  const addOnsTotal = decorationAddOns.filter((a) => selectedAddOns.includes(a.id)).reduce((sum, a) => sum + a.price, 0)
+  const totalPrice = pkg.price + addOnsTotal
 
-  
+  // ============================================
+  // BOOK NOW — package + selected add-ons cart mein,
+  // seedha checkout pe
+  // ============================================
+  const handleBookNow = () => {
+    dispatch(addToCart({ id: pkg.id, title: pkg.title, category: pkg.category, price: pkg.price, image: pkg.image }))
+    selectedAddOns.forEach((addOnId) => {
+      const addOn = decorationAddOns.find((a) => a.id === addOnId)
+      if (addOn) dispatch(addToCart({ id: addOn.id, title: addOn.name, category: 'Add-on', price: addOn.price, image: addOn.image }))
+    })
+    navigate('/checkout')
+  }
+
+  // ============================================
+  // QUICK ADD — cakes/gifts cross-sell ke liye
+  // ============================================
+  const handleQuickAdd = (shopItem: typeof shopItems[number]) => {
+    dispatch(addToCart({ id: shopItem.id, title: shopItem.title, category: shopItem.category, price: shopItem.price, image: shopItem.image }))
+    dispatch(showToast({ message: `${shopItem.title} added to cart! 🎉` }))
+  }
+
+  const scrollToReviews = () => {
+    document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const suggestedCakes = shopItems.filter((i) => i.category === 'Cakes').slice(0, 4)
+  const suggestedGifts = shopItems.filter((i) => ['Chocolates', 'Hampers', 'Flowers', 'Personalised'].includes(i.category)).slice(0, 4)
 
   return (
-    <div className="bg-[#FDFAF4] pb-0">
+    <div className="bg-[#FDFAF4] pb-28 md:pb-24">
 
       {/* BREADCRUMB */}
       <div className="bg-white border-b border-[#EDE0C4] py-4">
@@ -79,8 +102,9 @@ const PackageDetail = () => {
       </div>
 
       <div className="container mx-auto px-6 py-10">
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:items-start">
-          {/* LEFT — Images */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:items-start">
+
+          {/* LEFT — STICKY */}
           <div className="lg:sticky lg:top-[90px]">
             <div className="relative h-[360px] md:h-[440px] rounded-2xl overflow-hidden mb-4 shadow-[0_8px_40px_rgba(26,18,8,0.1)]">
               <img src={pkg.images[activeImage]} alt={pkg.title} className="w-full h-full object-cover" />
@@ -96,32 +120,34 @@ const PackageDetail = () => {
                 <FiHeart size={16} fill={wishlist ? 'white' : 'none'} />
               </button>
             </div>
+
             <div className="flex gap-3">
               {pkg.images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImage(i)}
-                  className={`h-[80px] flex-1 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-[#C9A84C]' : 'border-transparent'}`}
-                >
+                <button key={i} onClick={() => setActiveImage(i)} className={`h-[80px] flex-1 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-[#C9A84C]' : 'border-transparent'}`}>
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
           </div>
 
-          {/* RIGHT — Info */}
+          {/* RIGHT — Scrollable content */}
           <div>
-            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#D9776B] tracking-[0.25em] uppercase font-semibold mb-2">{pkg.category}</p>
-            <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] md:text-[2.6rem] text-[#1A1208] font-semibold leading-tight mb-4">{pkg.title}</h1>
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#D9776B] tracking-[0.25em] uppercase font-semibold mb-2">
+              {pkg.category}
+            </p>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] md:text-[2.6rem] text-[#1A1208] font-semibold leading-tight mb-4">
+              {pkg.title}
+            </h1>
 
-            {/* Rating */}
-<button onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-3 mb-5 hover:opacity-75 transition-opacity">              <div className="flex items-center gap-1">
+            {/* Rating — clickable */}
+            <button onClick={scrollToReviews} className="flex items-center gap-3 mb-5 hover:opacity-75 transition-opacity">
+              <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <FiStar key={i} size={14} fill={i < Math.floor(pkg.rating) ? '#D9776B' : 'none'} color={i < Math.floor(pkg.rating) ? '#D9776B' : '#EDE0C4'} />
                 ))}
               </div>
               <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#1A1208] font-semibold">{pkg.rating}</span>
-              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A]">({pkg.reviews} reviews)</span>
+              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A] underline">({pkg.reviews} reviews)</span>
             </button>
 
             {/* Quick Info */}
@@ -139,10 +165,12 @@ const PackageDetail = () => {
               ))}
             </div>
 
-            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#5C4A1E] leading-relaxed mb-6">{pkg.description}</p>
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#5C4A1E] leading-relaxed mb-6">
+              {pkg.description}
+            </p>
 
-            {/* Included */}
-            <div className="bg-white rounded-2xl p-5 mb-5 shadow-[0_4px_16px_rgba(26,18,8,0.05)]">
+            {/* What's Included */}
+            <div className="bg-white rounded-2xl p-5 mb-6 shadow-[0_4px_16px_rgba(26,18,8,0.05)]">
               <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-4">What's Included</h3>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {pkg.includes.map((item) => (
@@ -155,98 +183,106 @@ const PackageDetail = () => {
             </div>
 
             {/* ============================================
-                ADD-ONS SELECTOR — package detail pe
+                ADD-ONS SLIDER — booking total mein add hota hai
             ============================================ */}
-            <div className="bg-white rounded-2xl p-5 mb-5 shadow-[0_4px_16px_rgba(26,18,8,0.05)]">
-              <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-4">
-                Enhance Your Package ✨
+            <div className="mb-6">
+              <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">
+                Enhance Your Celebration — Add Ons
               </h3>
-              <div className="space-y-2.5">
-                {packageAddons.map((addon) => {
-                  const isSelected = selectedAddons.includes(addon.id)
+              <Slider>
+                {decorationAddOns.map((addOn) => {
+                  const isSelected = selectedAddOns.includes(addOn.id)
                   return (
-                    <label
-                      key={addon.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${isSelected ? 'border-[#C9A84C] bg-[#FDFAF4]' : 'border-[#EDE0C4] bg-white hover:border-[#C9A84C]/50'}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleAddon(addon.id)}
-                        className="sr-only"
-                      />
-                      <img src={addon.image} alt={addon.title} className="w-12 h-12 rounded-lg object-cover shrink-0" />
-                      <div className="flex-1">
-                        <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#1A1208] font-medium">{addon.title}</p>
-                        <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#C9A84C] font-semibold">+{formatPrice(addon.price)}</p>
+                    <label key={addOn.id} className={`shrink-0 w-[150px] flex flex-col gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${isSelected ? 'border-[#C9A84C] bg-[#FDFAF4]' : 'border-[#EDE0C4] bg-white'}`}>
+                      <input type="checkbox" checked={isSelected} onChange={() => toggleAddOn(addOn.id)} className="sr-only" />
+                      <div className="relative w-full h-[80px] rounded-lg overflow-hidden">
+                        <img src={addOn.image} alt={addOn.name} className="w-full h-full object-cover" />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-[#C9A84C]/30 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-full bg-[#C9A84C] flex items-center justify-center"><FiCheck size={14} color="white" /></div>
+                          </div>
+                        )}
                       </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-[#C9A84C] border-[#C9A84C]' : 'border-[#EDE0C4]'}`}>
-                        {isSelected && <FiCheck size={12} color="white" />}
-                      </div>
+                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-medium leading-snug">{addOn.name}</p>
+                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#C9A84C] font-semibold">+ {formatPrice(addOn.price)}</p>
                     </label>
                   )
                 })}
-              </div>
-
-              {selectedAddons.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-[#EDE0C4] flex items-center justify-between">
-                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#5C4A1E]">
-                    {selectedAddons.length} add-on{selectedAddons.length > 1 ? 's' : ''} selected
-                  </span>
-                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#C9A84C] font-semibold">
-                    +{formatPrice(addonsTotal)}
-                  </span>
-                </div>
-              )}
+              </Slider>
             </div>
 
-            {/* Price + CTA */}
-            {/* <div className="bg-white rounded-2xl p-5 shadow-[0_4px_16px_rgba(26,18,8,0.06)]">
-              <div className="flex items-end justify-between mb-4">
-                <div>
-                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A] mb-0.5">Total</p>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] text-[#1A1208] font-bold">
-                    {formatPrice(pkg.price + addonsTotal)}
-                  </p>
-                  {addonsTotal > 0 && (
-                    <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A]">
-                      Base {formatPrice(pkg.price)} + Add-ons {formatPrice(addonsTotal)}
-                    </p>
-                  )}
-                </div>
-                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A]">+ GST & Setup Fee</p>
+            {/* ============================================
+                CROSS-SELL — Cakes
+            ============================================ */}
+            {suggestedCakes.length > 0 && (
+              <div className="mb-6">
+                <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">
+                  🎂 Complete It With A Cake
+                </h3>
+                <Slider>
+                  {suggestedCakes.map((cake) => (
+                    <div key={cake.id} className="shrink-0 w-[160px] bg-white rounded-xl p-3 shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
+                      <Link to={`/shop/${cake.id}`}>
+                        <img src={cake.image} alt={cake.title} className="w-full h-[90px] rounded-lg object-cover mb-2" />
+                        <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-medium leading-snug mb-1">{cake.title}</p>
+                      </Link>
+                      <div className="flex items-center justify-between">
+                        <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#C9A84C] font-semibold">{formatPrice(cake.price)}</span>
+                        <button onClick={() => handleQuickAdd(cake)} className="w-6 h-6 rounded-full bg-[#1A1208] text-white flex items-center justify-center hover:bg-[#C9A84C] transition-colors text-[0.8rem]">+</button>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
               </div>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleAddToCart}
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  className={`w-full flex items-center justify-center gap-2 rounded-full py-3.5 text-[0.75rem] tracking-[0.1em] uppercase font-semibold transition-all ${added ? 'bg-green-500 text-white' : 'bg-[#C9A84C] text-white hover:bg-[#1A1208]'}`}
-                >
-                  {added ? <><FiCheck size={14} /> Added to Cart!</> : <><FiShoppingBag size={14} /> Add to Cart</>}
-                </button>
-                <Link
-                  to="/checkout"
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  className="w-full text-center border border-[#1A1208] text-[#1A1208] rounded-full py-3.5 text-[0.75rem] tracking-[0.1em] uppercase font-semibold hover:bg-[#1A1208] hover:text-white transition-all"
-                >
-                  Book Now
-                </Link>
+            )}
+
+            {/* ============================================
+                CROSS-SELL — Gifts
+            ============================================ */}
+            {suggestedGifts.length > 0 && (
+              <div className="mb-6">
+                <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">
+                  🎁 Add A Thoughtful Gift
+                </h3>
+                <Slider>
+                  {suggestedGifts.map((gift) => (
+                    <div key={gift.id} className="shrink-0 w-[160px] bg-white rounded-xl p-3 shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
+                      <Link to={`/shop/${gift.id}`}>
+                        <img src={gift.image} alt={gift.title} className="w-full h-[90px] rounded-lg object-cover mb-2" />
+                        <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-medium leading-snug mb-1">{gift.title}</p>
+                      </Link>
+                      <div className="flex items-center justify-between">
+                        <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#C9A84C] font-semibold">{formatPrice(gift.price)}</span>
+                        <button onClick={() => handleQuickAdd(gift)} className="w-6 h-6 rounded-full bg-[#1A1208] text-white flex items-center justify-center hover:bg-[#C9A84C] transition-colors text-[0.8rem]">+</button>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
               </div>
-            </div> */}
+            )}
+
           </div>
         </div>
 
-        {/* REVIEWS */}
-      <ReviewsSection/>
+        <ReviewsSection />
       </div>
 
-      {/* RELATED PACKAGES SLIDER */}
-      <RelatedSlider
-        currentId={pkg.id}
-        category={pkg.category}
-        allPackages={allPackages}
-        title="You May Also Like"
-      />
+      {/* FIXED BOTTOM BAR — Booking only */}
+      <div className="fixed bottom-[60px] md:bottom-0 left-0 right-0 z-[80] bg-white border-t border-[#EDE0C4] shadow-[0_-4px_20px_rgba(26,18,8,0.08)]">
+        <div className="container mx-auto px-6 py-3 flex items-center justify-between gap-3">
+          <div>
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.6rem] text-[#9E8A6A] uppercase tracking-wider">Total</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.3rem] text-[#1A1208] font-bold">{formatPrice(totalPrice)}</p>
+          </div>
+          <button
+            onClick={handleBookNow}
+            style={{ fontFamily: "'Jost', sans-serif" }}
+            className="bg-[#C9A84C] text-white rounded-full px-8 sm:px-10 py-3 text-[0.75rem] tracking-[0.15em] uppercase font-semibold hover:bg-[#1A1208] transition-colors"
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
