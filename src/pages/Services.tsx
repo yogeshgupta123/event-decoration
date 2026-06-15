@@ -1,9 +1,9 @@
-import { showToast } from '../store/uiSlice'
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { FiChevronDown, FiHeart, FiMapPin, FiShoppingBag } from 'react-icons/fi'
 import { useAppDispatch } from '../store/hooks'
 import { addToCart } from '../store/cartSlice'
+import { showToast } from '../store/uiSlice'
 
 const allPackages = [
   { id: 1, title: 'Royal Rose Terrace', category: 'Wedding', price: 154999, image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400', badge: 'Best Seller' },
@@ -23,52 +23,52 @@ const allPackages = [
 const categories = ['Wedding', 'Birthday', 'Corporate', 'Engagement']
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
+// ============================================
+// CATEGORY KE HISAAB SE HEADING/DESCRIPTION badle
+// ============================================
+const categoryInfo: Record<string, { title: string; description: string }> = {
+  Wedding: { title: 'Wedding Decoration Packages', description: 'Make your big day unforgettable with curated wedding decor themes — from intimate ceremonies to grand celebrations.' },
+  Birthday: { title: 'Birthday Decoration Packages', description: 'Fun, colorful, and personalized birthday setups for kids, teens, and adults alike.' },
+  Corporate: { title: 'Corporate Event Packages', description: 'Professional, branded setups for conferences, product launches, and team celebrations.' },
+  Engagement: { title: 'Engagement Decoration Packages', description: 'Elegant ring ceremony and proposal setups designed to make the moment unforgettable.' },
+}
+
 const Services = () => {
   const dispatch = useAppDispatch()
-
-  // ============================================
-  // useSearchParams — URL ke ?category=Wedding wala part padhega
-  // jaise: /services?category=Wedding
-  // ============================================
   const [searchParams] = useSearchParams()
   const categoryFromUrl = searchParams.get('category')
-const searchQuery = (searchParams.get('search') || '').toLowerCase()
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    categoryFromUrl ? [categoryFromUrl] : []
-  )
+  const searchTerm = searchParams.get('search') || ''
+  const searchQuery = searchTerm.toLowerCase()
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(categoryFromUrl ? [categoryFromUrl] : [])
   const [maxPrice, setMaxPrice] = useState(250000)
   const [sortBy, setSortBy] = useState('featured')
 
-  // ============================================
-  // Agar URL change ho (mega menu se naya category click karo)
-  // toh filter bhi update ho jaye
-  // ============================================
   useEffect(() => {
-    if (categoryFromUrl) {
-      setSelectedCategories([categoryFromUrl])
-    }
+    setSelectedCategories(categoryFromUrl ? [categoryFromUrl] : [])
   }, [categoryFromUrl])
 
   const toggleCategory = (cat: string) => {
-    if (selectedCategories.includes(cat)) {
-      setSelectedCategories(selectedCategories.filter((c) => c !== cat))
-    } else {
-      setSelectedCategories([...selectedCategories, cat])
-    }
+    setSelectedCategories(selectedCategories.includes(cat) ? selectedCategories.filter((c) => c !== cat) : [...selectedCategories, cat])
   }
 
- let filteredPackages = allPackages.filter((pkg) => {
-  const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(pkg.category)
-  const priceMatch = pkg.price <= maxPrice
-  const searchMatch = !searchQuery || pkg.title.toLowerCase().includes(searchQuery)
-  return categoryMatch && priceMatch && searchMatch
-})
+  let filteredPackages = allPackages.filter((pkg) => {
+    const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(pkg.category)
+    const priceMatch = pkg.price <= maxPrice
+    const searchMatch = !searchQuery || pkg.title.toLowerCase().includes(searchQuery)
+    return categoryMatch && priceMatch && searchMatch
+  })
 
-  if (sortBy === 'low-high') {
-    filteredPackages = [...filteredPackages].sort((a, b) => a.price - b.price)
-  } else if (sortBy === 'high-low') {
-    filteredPackages = [...filteredPackages].sort((a, b) => b.price - a.price)
-  }
+  if (sortBy === 'low-high') filteredPackages = [...filteredPackages].sort((a, b) => a.price - b.price)
+  else if (sortBy === 'high-low') filteredPackages = [...filteredPackages].sort((a, b) => b.price - a.price)
+
+  // ============================================
+  // DYNAMIC HEADING — category info se, ya search se,
+  // ya default
+  // ============================================
+  const info = categoryFromUrl ? categoryInfo[categoryFromUrl] : null
+  const pageTitle = info?.title || (searchTerm ? `Results for "${searchTerm}"` : 'Event Decoration Packages')
+  const pageDescription = info?.description || 'Curated themes for every celebration, from intimate gatherings to grand events.'
 
   return (
     <div className="bg-[#FDFAF4]">
@@ -77,16 +77,16 @@ const searchQuery = (searchParams.get('search') || '').toLowerCase()
       <div className="bg-white border-b border-[#EDE0C4] py-10">
         <div className="container mx-auto px-6">
           <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#9E8A6A] mb-3">
-            Home / Services / <span className="text-[#D9776B]">All Packages</span>
+            Home / Services / <span className="text-[#D9776B]">{categoryFromUrl || 'All Packages'}</span>
           </p>
 
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
               <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2.2rem] md:text-[2.8rem] text-[#1A1208] font-semibold mb-2">
-                Event Decoration Packages
+                {pageTitle}
               </h1>
               <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#9E8A6A]">
-                Curated themes for every celebration, from intimate gatherings to grand events.
+                {pageDescription}
               </p>
             </div>
 
@@ -110,76 +110,43 @@ const searchQuery = (searchParams.get('search') || '').toLowerCase()
                 Refine Search
               </h3>
 
-              {/* Category Filter */}
               <div className="mb-6">
-                <h4 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-3">
-                  Event Type
-                </h4>
+                <h4 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-3">Event Type</h4>
                 <div className="space-y-2.5">
                   {categories.map((cat) => (
                     <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(cat)}
-                        onChange={() => toggleCategory(cat)}
-                        className="accent-[#D9776B] w-4 h-4 cursor-pointer rounded"
-                      />
-                      <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#5C4A1E] group-hover:text-[#D9776B] transition-colors">
-                        {cat}
-                      </span>
+                      <input type="checkbox" checked={selectedCategories.includes(cat)} onChange={() => toggleCategory(cat)} className="accent-[#D9776B] w-4 h-4 cursor-pointer rounded" />
+                      <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#5C4A1E] group-hover:text-[#D9776B] transition-colors">{cat}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              {/* Price Range Filter */}
               <div className="mb-6">
-                <h4 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-3">
-                  Max Budget
-                </h4>
-                <input
-                  type="range"
-                  min="20000"
-                  max="250000"
-                  step="5000"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-[#D9776B]"
-                />
+                <h4 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-3">Max Budget</h4>
+                <input type="range" min="20000" max="250000" step="5000" value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="w-full accent-[#D9776B]" />
                 <div className="flex justify-between mt-2">
                   <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A]">₹20,000</span>
                   <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#D9776B] font-semibold">{formatPrice(maxPrice)}</span>
                 </div>
               </div>
 
-              {/* Clear Filters */}
-              <button
-                onClick={() => { setSelectedCategories([]); setMaxPrice(250000) }}
-                style={{ fontFamily: "'Jost', sans-serif" }}
-                className="w-full rounded-full border border-[#EDE0C4] text-[#5C4A1E] py-2.5 text-[0.75rem] tracking-[0.15em] uppercase hover:border-[#D9776B] hover:text-[#D9776B] transition-colors"
-              >
+              <button onClick={() => { setSelectedCategories([]); setMaxPrice(250000) }} style={{ fontFamily: "'Jost', sans-serif" }} className="w-full rounded-full border border-[#EDE0C4] text-[#5C4A1E] py-2.5 text-[0.75rem] tracking-[0.15em] uppercase hover:border-[#D9776B] hover:text-[#D9776B] transition-colors">
                 Clear All Filters
               </button>
-
             </div>
           </aside>
 
           {/* RIGHT — Results */}
           <div className="lg:col-span-3">
 
-            {/* Top bar */}
             <div className="flex items-center justify-between mb-6">
               <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#5C4A1E]">
                 <span className="font-semibold text-[#1A1208]">{filteredPackages.length}</span> packages found
               </p>
 
               <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  className="appearance-none bg-white rounded-full border border-[#EDE0C4] pl-4 pr-9 py-2.5 text-[0.8rem] text-[#1A1208] outline-none cursor-pointer focus:border-[#C9A84C]"
-                >
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ fontFamily: "'Jost', sans-serif" }} className="appearance-none bg-white rounded-full border border-[#EDE0C4] pl-4 pr-9 py-2.5 text-[0.8rem] text-[#1A1208] outline-none cursor-pointer focus:border-[#C9A84C]">
                   <option value="featured">Featured First</option>
                   <option value="low-high">Price: Low to High</option>
                   <option value="high-low">Price: High to Low</option>
@@ -188,77 +155,38 @@ const searchQuery = (searchParams.get('search') || '').toLowerCase()
               </div>
             </div>
 
-            {/* GRID */}
             {filteredPackages.length === 0 ? (
               <div className="bg-white rounded-2xl shadow-[0_4px_16px_rgba(26,18,8,0.06)] p-12 text-center">
-                <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.4rem] text-[#1A1208] mb-2">
-                  No packages found
-                </p>
-                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#9E8A6A]">
-                  Try adjusting your filters to see more results.
-                </p>
+                <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.4rem] text-[#1A1208] mb-2">No packages found</p>
+                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#9E8A6A] mb-4">Try adjusting your filters, or explore our other categories.</p>
+                <div className="flex gap-3 justify-center">
+                  <Link to="/services" style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#C9A84C] underline">View All Packages</Link>
+                  <Link to="/shop" style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#C9A84C] underline">Browse Gift Shop</Link>
+                  <Link to="/experiences" style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#C9A84C] underline">View Experiences</Link>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredPackages.map((pkg) => (
-                  // ============================================
-                  // POORA CARD AB EK LINK HAI — click karo toh detail page khulega
-                  // ============================================
-                  <Link
-                    to={`/package/${pkg.id}`}
-                    key={pkg.id}
-                    className="group block bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300"
-                  >
-                    {/* Image */}
+                  <Link to={`/package/${pkg.id}`} key={pkg.id} className="group block bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300">
                     <div className="relative h-[200px] overflow-hidden">
-                      <img
-                        src={pkg.image}
-                        alt={pkg.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
+                      <img src={pkg.image} alt={pkg.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       {pkg.badge && (
-                        <span style={{ fontFamily: "'Jost', sans-serif" }} className="absolute top-3 left-3 bg-[#D9776B] text-white rounded-full text-[0.6rem] px-3 py-1.5 tracking-[0.15em] uppercase font-semibold">
-                          {pkg.badge}
-                        </span>
+                        <span style={{ fontFamily: "'Jost', sans-serif" }} className="absolute top-3 left-3 bg-[#D9776B] text-white rounded-full text-[0.6rem] px-3 py-1.5 tracking-[0.15em] uppercase font-semibold">{pkg.badge}</span>
                       )}
-                      {/* Wishlist — click se navigate na ho isliye stopPropagation */}
-                      <button
-                        onClick={(e) => e.preventDefault()}
-                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center hover:bg-[#D9776B] hover:text-white transition-colors"
-                      >
-                        <FiHeart size={14} />
-                      </button>
+                      <button onClick={(e) => e.preventDefault()} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center hover:bg-[#D9776B] hover:text-white transition-colors"><FiHeart size={14} /></button>
                     </div>
-
-                    {/* Content */}
                     <div className="p-5">
-                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#C9A84C] tracking-[0.2em] uppercase mb-1 font-semibold">
-                        {pkg.category}
-                      </p>
-                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.2rem] text-[#1A1208] font-semibold mb-3">
-                        {pkg.title}
-                      </h3>
+                      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#C9A84C] tracking-[0.2em] uppercase mb-1 font-semibold">{pkg.category}</p>
+                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.2rem] text-[#1A1208] font-semibold mb-3">{pkg.title}</h3>
                       <div className="flex items-center justify-between pt-3 border-t border-[#EDE0C4]">
-                        <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[1.05rem] text-[#1A1208] font-semibold">
-                          {formatPrice(pkg.price)}
-                        </span>
+                        <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[1.05rem] text-[#1A1208] font-semibold">{formatPrice(pkg.price)}</span>
                         <button
                           onClick={(e) => {
-                            // ============================================
-                            // VERY IMPORTANT — ye click ko yahin rok do
-                            // taaki parent Link navigate na kare!
-                            // ============================================
                             e.preventDefault()
                             e.stopPropagation()
-                            dispatch(addToCart({
-                              id: pkg.id,
-                              title: pkg.title,
-                              category: pkg.category,
-                              price: pkg.price,
-                              image: pkg.image,
-                            }))
-                              dispatch(showToast({ message: `${pkg.title} added to cart! 🛒` }))
-
+                            dispatch(addToCart({ id: pkg.id, title: pkg.title, category: pkg.category, price: pkg.price, image: pkg.image }))
+                            dispatch(showToast({ message: `${pkg.title} added to cart! 🛒` }))
                           }}
                           style={{ fontFamily: "'Jost', sans-serif" }}
                           className="flex items-center gap-1.5 bg-[#1A1208] text-white rounded-full px-4 py-2 text-[0.68rem] tracking-[0.1em] uppercase font-medium hover:bg-[#C9A84C] transition-colors"
@@ -271,7 +199,6 @@ const searchQuery = (searchParams.get('search') || '').toLowerCase()
                 ))}
               </div>
             )}
-
           </div>
         </div>
       </div>

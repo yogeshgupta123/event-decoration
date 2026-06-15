@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { FiChevronLeft, FiChevronRight, FiHeart } from 'react-icons/fi'
+import { Link } from 'react-router-dom'
 
 const tabs = ['Weddings', 'Birthday', 'Corporate', 'Engagement']
 
@@ -73,10 +74,11 @@ const CategorySlider = () => {
 
           <div ref={scrollRef} className="flex gap-5 overflow-x-auto scroll-smooth scrollbar-hide pb-2">
             {filteredItems.map((item) => (
-              <div
-                key={item.id}
-                className="group shrink-0 w-[260px] bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300"
-              >
+              <Link
+  to={`/services?category=${activeTab}`}
+  key={item.id}
+  className="group shrink-0 w-[260px] block bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300"
+>
                 <div className="relative h-[200px] overflow-hidden">
                   <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center hover:bg-[#D9776B] hover:text-white transition-colors">
@@ -91,7 +93,7 @@ const CategorySlider = () => {
                     {formatPrice(item.price)}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 

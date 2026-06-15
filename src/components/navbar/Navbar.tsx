@@ -195,12 +195,12 @@ const Navbar = () => {
     setActiveMobileCategory(null)
   }
 
-  const handleSearch = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      navigate(`/services?search=${searchQuery}`)
-      setSearchQuery('')
-    }
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === 'Enter' && searchQuery.trim()) {
+    navigate(`/services?search=${encodeURIComponent(searchQuery.trim())}`)
+    setSearchQuery('')
   }
+}
 
   return (
     <>

@@ -13,6 +13,11 @@ import TrustBar from '../components/home/TrustBar'
 import Testimonials from '../components/home/Testimonials'
 import TrendingPackages from '../components/home/TrendingPackages'
 import WhyChooseUs from '../components/home/WhyChooseUs'
+// import OccasionShop from '../components/home/OccasionShop'
+// import BestSelling from '../components/home/BestSelling'
+import FlowerPicker from '../components/home/FlowerPicker'
+import PersonaliseSection from '../components/home/PersonaliseSection'
+import FeaturedExperiences from '../components/home/FeaturedExperiences'
 
 function Home() {
   return (
@@ -21,6 +26,12 @@ function Home() {
       <StatsBar/>
        <TrustBar />
       <Occasions/>
+      <FeaturedExperiences/>
+      {/* <OccasionShop/> */}
+      {/* <BestSelling/> */}
+      <FlowerPicker/>
+      <PersonaliseSection/>
+
       <CategorySlider/>
       <TrendingPackages/>
       <PlanningSection/>
