@@ -51,23 +51,26 @@ const AddOnModal = ({ addOns, categories, selectedAddOns, onToggle, onClose }: A
 </div>
 
         {/* Filter Tabs */}
-       {categories && (
-  <div className="flex gap-2 px-6 pb-4 overflow-x-auto scrollbar-hide border-b border-[#EDE0C4]">
-    {['All', ...categories].map((c) => (
-      <button
-        key={c}
-        onClick={() => setFilter(c)}
-        style={{ fontFamily: "'Jost', sans-serif" }}
-        className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-[0.74rem] font-medium transition-all border ${
-    filter === c ? 'bg-[#1A1208] text-white border-[#1A1208]' : 'bg-white text-[#5C4A1E] border-[#EDE0C4] hover:border-[#C9A84C]'
-  }`}
-      >
-        {c}
-      </button>
-    ))}
+{categories && (
+  <div className="px-6 pb-4 border-b border-[#EDE0C4]">
+    <div className="flex gap-2 p-1 bg-[#FAF7F1] rounded-full overflow-x-auto scrollbar-hide">
+      {['All', ...categories].map((c) => (
+        <button
+          key={c}
+          onClick={() => setFilter(c)}
+          style={{ fontFamily: "'Jost', sans-serif" }}
+          className={`shrink-0 rounded-full px-5 h-9 text-[13px] font-medium transition-all duration-300 ${
+            filter === c
+              ? 'bg-[#1A1208] text-white shadow-sm'
+              : 'text-[#6F5A2B] hover:bg-white'
+          }`}
+        >
+          {c}
+        </button>
+      ))}
+    </div>
   </div>
 )}
-
         {/* List */}
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {filtered.map((addOn) => {

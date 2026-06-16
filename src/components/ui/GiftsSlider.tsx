@@ -4,7 +4,7 @@ import { useAppDispatch } from '../../store/hooks'
 import { addToCart } from '../../store/cartSlice'
 import { showToast } from '../../store/uiSlice'
 import Slider from './Slider'
-// import PriceTag from './PriceTag'
+import PriceTag from './PriceTag'
 
 interface Props {
   excludeId?: number
@@ -35,8 +35,11 @@ const GiftsSlider = ({ excludeId, title = '🎁 Add A Thoughtful Gift' }: Props)
               <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-medium leading-snug mb-1 truncate">{gift.title}</p>
             </Link>
             <div className="flex items-center justify-between">
-              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#C9A84C] font-semibold">₹{gift.price.toLocaleString('en-IN')}</span>
-              <button onClick={() => handleQuickAdd(gift)} className="w-6 h-6 rounded-full bg-[#1A1208] text-white flex items-center justify-center hover:bg-[#C9A84C] transition-colors text-[0.8rem]">+</button>
+<PriceTag
+  price={gift.price}
+  size="sm"
+  discountPercent={20}
+/>              <button onClick={() => handleQuickAdd(gift)} className="w-6 h-6 rounded-full bg-[#1A1208] text-white flex items-center justify-center hover:bg-[#C9A84C] transition-colors text-[0.8rem]">+</button>
             </div>
           </div>
         ))}

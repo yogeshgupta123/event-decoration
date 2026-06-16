@@ -1,9 +1,11 @@
 import { showToast } from "../store/uiSlice";
 import AddOnModal from "../components/ui/AddOnModal";
-import { useState } from "react";
+import { useState , useEffect  } from "react";
 import DetailExtraSections from "../components/ui/DetailExtraSections";
 import PincodeCheck from "../components/ui/PincodeCheck";
 import { useParams, Link } from "react-router-dom";
+import { addRecentlyViewed } from '../store/recentlyViewedSlice'
+import GiftsSlider from '../components/ui/GiftsSlider'
 import {
   FiStar,
   FiShoppingBag,
@@ -24,6 +26,7 @@ import {
   StaggerItem,
 } from "../components/animations/StaggerContainer";
 import WishlistButton from "../components/ui/WishlistButton";
+import PriceTag from "../components/ui/PriceTag";
 // import GiftsSlider from '../components/ui/GiftsSlider'
 
 const formatPrice = (price: number) => `₹${price.toLocaleString("en-IN")}`;
@@ -33,7 +36,19 @@ const ShopDetail = () => {
   const dispatch = useAppDispatch();
 
   const item = shopItems.find((p) => p.id === Number(id));
-
+useEffect(() => {
+  if (item) {
+    dispatch(
+      addRecentlyViewed({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        image: item.image,
+        path: `/shop/${item.id}`,
+      })
+    )
+  }
+}, [item?.id, dispatch])
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedAddOns, setSelectedAddOns] = useState<number[]>([]);
@@ -307,7 +322,11 @@ const ShopDetail = () => {
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
                 className="text-[2rem] text-[#1A1208] font-bold"
               >
-                {formatPrice(item.price)}
+              <PriceTag
+  price={item.price}
+  size="md"
+  discountPercent={20}
+/>
               </span>
               <span
                 style={{ fontFamily: "'Jost', sans-serif" }}
@@ -428,7 +447,7 @@ const ShopDetail = () => {
                 </div>
               )}
             </div>
-
+<GiftsSlider excludeId={item.id} />
             {/* ============================================
                 TOTAL + ADD TO CART
             ============================================ */}

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { FiStar, FiMapPin, FiClock, FiCheck, FiChevronLeft, FiCalendar, FiUsers, FiHeart, FiPlus, FiX } from 'react-icons/fi'
 import { experiences } from '../data/experiences'
@@ -9,6 +8,10 @@ import { StaggerContainer, StaggerItem } from '../components/animations/StaggerC
 import ReviewsSection from '../components/ui/ReviewsSection'
 import AddOnModal from '../components/ui/AddOnModal'
 import AvailabilityCalendar from '../components/ui/AvailabilityCalendar'
+import { useState, useEffect } from 'react'
+import { addRecentlyViewed } from '../store/recentlyViewedSlice'
+import PriceTag from '../components/ui/PriceTag'
+import GiftsSlider from '../components/ui/GiftsSlider'
 
 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
@@ -35,6 +38,20 @@ const ExperienceDetail = () => {
   const dispatch = useAppDispatch()
 
   const exp = experiences.find((e) => e.id === Number(id))
+
+  useEffect(() => {
+  if (exp) {
+    dispatch(
+      addRecentlyViewed({
+        id: exp.id,
+        title: exp.title,
+        price: exp.price,
+        image: exp.image,
+        path: `/experience/${exp.id}`,
+      })
+    )
+  }
+}, [exp?.id, dispatch])
 
   const [activeImage, setActiveImage] = useState(0)
   const [wishlist, setWishlist] = useState(false)
@@ -255,7 +272,11 @@ const [showCalendar, setShowCalendar] = useState(false)
               <div className="space-y-2 mb-4 pb-4 border-b border-[#EDE0C4]">
                 <div className="flex justify-between">
                   <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#5C4A1E]">{exp.title}</span>
-                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#1A1208] font-medium">{formatPrice(exp.price)}</span>
+                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#1A1208] font-medium"><PriceTag
+  price={exp.price}
+  size="md"
+  discountPercent={15}
+/></span>
                 </div>
                 {selectedAddOns.map((addOnId) => {
                   const addOn = experienceAddOns.find((a) => a.id === addOnId)
@@ -281,6 +302,7 @@ const [showCalendar, setShowCalendar] = useState(false)
               </button>
               <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.68rem] text-[#9E8A6A] text-center mt-3">30% advance payment to confirm your booking</p>
             </div>
+            <GiftsSlider excludeId={exp.id} />
           </div>
         </div>
 

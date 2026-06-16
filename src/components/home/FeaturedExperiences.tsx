@@ -24,35 +24,166 @@ const FeaturedExperiences = () => {
           </div>
         </FadeIn>
 
-        <Slider>
-          {featured.map((exp) => (
-            <Link key={exp.id} to={`/experience/${exp.id}`} className="group shrink-0 w-[280px] block bg-white rounded-2xl overflow-hidden shadow-[0_4px_16px_rgba(26,18,8,0.06)] hover:shadow-[0_16px_40px_rgba(201,168,76,0.25)] hover:-translate-y-2 transition-all duration-300">
-              <div className="relative h-[200px] overflow-hidden">
-                <img src={exp.image} alt={exp.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(26,18,8,0.75) 0%, transparent 55%)' }} />
-                <span style={{ fontFamily: "'Jost', sans-serif" }} className="absolute top-3 left-3 bg-white/95 text-[#1A1208] rounded-full text-[0.6rem] px-3 py-1.5 tracking-[0.1em] uppercase font-semibold">{exp.category}</span>
-                <span style={{ fontFamily: "'Jost', sans-serif" }} className="absolute top-3 right-3 bg-[#D9776B] text-white rounded-full text-[0.6rem] px-2.5 py-1.5 font-semibold">🔥 {exp.bookedToday}</span>
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-white text-[1.15rem] font-semibold mb-1 leading-snug">{exp.title}</h3>
-                  <div className="flex items-center gap-3 text-white/85">
-                    <div className="flex items-center gap-1"><FiMapPin size={11} /><span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.68rem]">{exp.location}</span></div>
-                    <div className="flex items-center gap-1"><FiClock size={11} /><span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.68rem]">{exp.duration}</span></div>
-                  </div>
-                </div>
+       <Slider>
+  {featured.map((exp) => (
+    <Link
+      key={exp.id}
+      to={`/experience/${exp.id}`}
+className="group shrink-0 w-[260px] sm:w-[300px] lg:w-[340px]"    >
+      <div className="overflow-hidden rounded-[28px] bg-white border border-[#F1E4C5] shadow-[0_10px_30px_rgba(26,18,8,0.06)] hover:shadow-[0_24px_70px_rgba(201,168,76,0.18)] transition-all duration-500 hover:-translate-y-2">
+        
+        {/* Image */}
+<div className="relative h-[220px] sm:h-[280px] lg:h-[320px] overflow-hidden">          <img
+            src={exp.image}
+            alt={exp.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1208]/90 via-[#1A1208]/20 to-transparent" />
+
+          {/* Category */}
+          <div className="absolute top-4 left-4">
+            <span
+              style={{ fontFamily: "'Jost', sans-serif" }}
+className="
+px-2.5 py-1
+sm:px-3 sm:py-1.5
+rounded-full
+bg-white/90
+backdrop-blur
+text-[#1A1208]
+text-[9px]
+sm:text-[10px]
+tracking-[0.12em]
+uppercase
+font-semibold
+"            >
+              {exp.category}
+            </span>
+          </div>
+
+          {/* Trending */}
+          <div className="absolute top-3 right-3">
+  <span
+    style={{ fontFamily: "'Jost', sans-serif" }}
+    className="
+      px-2 py-1
+      sm:px-3 sm:py-1.5
+      rounded-full
+      bg-[#C9A84C]
+      text-white
+      text-[8px]
+      sm:text-[10px]
+      font-semibold
+      max-w-[90px]
+      sm:max-w-none
+     text-center
+leading-tight
+    "
+  >
+    🔥 {exp.bookedToday}
+  </span>
+</div>
+          {/* Content On Image */}
+          <div className="absolute bottom-0 left-0 right-0 p-5">
+            <h3
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              className="text-white text-[1.4rem] lg:text-[1.7rem] font-semibold leading-tight mb-3"
+            >
+              {exp.title}
+            </h3>
+
+            <div className="flex flex-wrap gap-4 text-white/90">
+              <div className="flex items-center gap-1.5">
+                <FiMapPin size={13} />
+                <span
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                  className="text-[12px]"
+                >
+                  {exp.location}
+                </span>
               </div>
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <FiStar size={13} fill="#D9776B" color="#D9776B" />
-                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#1A1208] font-semibold">{exp.rating}</span>
-                </div>
-                <div className="text-right">
-                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.6rem] text-[#9E8A6A] uppercase tracking-wider">From</p>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.1rem] text-[#1A1208] font-bold">{formatPrice(exp.price)}</p>
-                </div>
+
+              <div className="flex items-center gap-1.5">
+                <FiClock size={13} />
+                <span
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                  className="text-[12px]"
+                >
+                  {exp.duration}
+                </span>
               </div>
-            </Link>
-          ))}
-        </Slider>
+            </div>
+          </div>
+
+          {/* Hover CTA */}
+          <div className="absolute bottom-5 right-5 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+            <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-xl">
+              <FiArrowRight
+                size={18}
+                className="text-[#1A1208]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-5">
+          <div className="flex items-center justify-between">
+            
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <FiStar
+                  size={14}
+                  fill="#C9A84C"
+                  color="#C9A84C"
+                />
+
+                <span
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                  className="text-[0.82rem] text-[#1A1208] font-semibold"
+                >
+                  {exp.rating}
+                </span>
+
+                <span
+                  style={{ fontFamily: "'Jost', sans-serif" }}
+                  className="text-[0.72rem] text-[#9E8A6A]"
+                >
+                  Exceptional
+                </span>
+              </div>
+
+              <p
+                style={{ fontFamily: "'Jost', sans-serif" }}
+                className="text-[10px] uppercase tracking-[0.2em] text-[#9E8A6A]"
+              >
+                Starting From
+              </p>
+            </div>
+
+            <div className="text-right">
+              <p
+                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                className="text-[1.5rem] text-[#1A1208] font-bold"
+              >
+                {formatPrice(exp.price)}
+              </p>
+
+              <p
+                style={{ fontFamily: "'Jost', sans-serif" }}
+                className="text-[11px] text-[#C9A84C] font-semibold uppercase tracking-[0.15em]"
+              >
+                Explore
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  ))}
+</Slider>
       </div>
     </section>
   )

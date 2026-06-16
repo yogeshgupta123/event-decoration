@@ -30,7 +30,7 @@ function Home() {
     <div>
       <Hero />
       <QuickCategories/>
-      <RecentlyViewed/>
+      
       <StatsBar/>
 
        <TrustBar />
@@ -60,6 +60,7 @@ function Home() {
       <WhyChooseUs/>
       <Testimonials/>
       <FAQ/>
+      <RecentlyViewed/>
       <Gallery/>
       <AddonsSlider/>
       <BlogSection/>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState , useEffect  } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { FiStar, FiMapPin, FiClock, FiUsers, FiHeart, FiCheck, FiChevronLeft, FiPlus, FiX } from 'react-icons/fi'
 import { useAppDispatch } from '../store/hooks'
@@ -8,6 +8,8 @@ import { shopItems } from '../data/shopItems'
 import Slider from '../components/ui/Slider'
 import ReviewsSection from '../components/ui/ReviewsSection'
 import AddOnModal from '../components/ui/AddOnModal'
+import { addRecentlyViewed } from '../store/recentlyViewedSlice'
+
 
 const allPackages = [
   { id: 1, title: 'Royal Rose Terrace', category: 'Wedding', price: 154999, image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800', badge: 'Best Seller', rating: 4.9, reviews: 124, duration: '8-10 hours', guests: 'Up to 500', location: 'Pan India', description: 'A breathtaking royal-themed wedding decoration featuring fresh roses, gold accents, and ornate stage setup. Perfect for a grand celebration that will be remembered for years.', includes: ['Stage & Mandap Setup', 'Floral Arch Entrance', 'Table Centerpieces (50 tables)', 'Aisle Decoration', 'Photo Wall', 'Fairy Light Ceiling', 'Dedicated Event Manager'], images: ['https://images.unsplash.com/photo-1519741497674-611481863552?w=400', 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400', 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400'] },
@@ -45,6 +47,20 @@ const PackageDetail = () => {
   const [showAddOnModal, setShowAddOnModal] = useState(false)
 
   const pkg = allPackages.find((p) => p.id === Number(id))
+useEffect(() => {
+  if (pkg) {
+    dispatch(
+      addRecentlyViewed({
+        id: pkg.id,
+        title: pkg.title,
+        price: pkg.price,
+        image: pkg.image,
+        path: `/package/${pkg.id}`,
+      })
+    )
+  }
+}, [pkg?.id, dispatch])
+
 
   if (!pkg) {
     return (

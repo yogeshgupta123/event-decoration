@@ -1,9 +1,9 @@
 import { useParams, Link } from 'react-router-dom'
-import { useState, useRef } from 'react'
+import { useState, useEffect , useRef } from 'react'
 import { FiStar, FiHeart, FiShoppingBag, FiCheck, FiChevronLeft, FiChevronRight, FiTruck, FiRefreshCw, FiShield, FiMinus, FiPlus } from 'react-icons/fi'
 import { useAppDispatch } from '../store/hooks'
 import { addToCart } from '../store/cartSlice'
-
+import { addRecentlyViewed } from '../store/recentlyViewedSlice'
 // ============================================
 // PRODUCTS DATA — gifts, cakes, small decor
 // ============================================
@@ -112,6 +112,21 @@ const ProductDetail = () => {
   const imgRef = useRef<HTMLDivElement>(null)
 
   const product = allProducts.find((p) => p.id === Number(id))
+
+  useEffect(() => {
+  if (product) {
+    dispatch(
+      addRecentlyViewed({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.images[0],
+        path: `/product/${product.id}`,
+      })
+    )
+  }
+}, [product?.id, dispatch])
+
 
   if (!product) {
     return (
