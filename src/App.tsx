@@ -23,6 +23,8 @@ import Experiences from './pages/Experiences'
 import ExperienceDetail from './pages/ExperienceDetail'
 import OrderConfirmation from './pages/OrderConfirmation'
 import NotFound from './pages/NotFound'
+import SearchResults from './pages/SearchResults'
+
 
 const AnimatedRoutes = () => {
   const location = useLocation()
@@ -45,6 +47,7 @@ const AnimatedRoutes = () => {
         <Route path="/experiences" element={<PageTransition><Experiences /></PageTransition>} />
         <Route path="/experience/:id" element={<PageTransition><ExperienceDetail /></PageTransition>} />
         <Route path="/order-confirmed/:id" element={<PageTransition><OrderConfirmation /></PageTransition>} />
+<Route path="/search" element={<PageTransition><SearchResults /></PageTransition>} />
 
         {/* ✅ HAMESHA SABSE LAST */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />

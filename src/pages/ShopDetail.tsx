@@ -1,13 +1,14 @@
 import { showToast } from '../store/uiSlice'
-
+import AddOnModal from '../components/ui/AddOnModal'
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FiStar, FiHeart, FiShoppingBag, FiCheck, FiChevronLeft, FiMinus, FiPlus, FiTruck, FiShield } from 'react-icons/fi'
+import { FiStar,  FiShoppingBag, FiCheck, FiChevronLeft, FiMinus, FiX , FiPlus, FiTruck, FiShield } from 'react-icons/fi'
 import { useAppDispatch } from '../store/hooks'
 import { addToCart, increaseQuantity } from '../store/cartSlice'
 import { shopItems } from '../data/shopItems'
 import { StaggerContainer, StaggerItem } from '../components/animations/StaggerContainer'
-
+ import WishlistButton from '../components/ui/WishlistButton'
+ 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
 const ShopDetail = () => {
@@ -19,7 +20,7 @@ const ShopDetail = () => {
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [selectedAddOns, setSelectedAddOns] = useState<number[]>([])
-  const [wishlist, setWishlist] = useState(false)
+  const [showAddOnModal, setShowAddOnModal] = useState(false)
   const [added, setAdded] = useState(false)
 
   // ============================================
@@ -132,12 +133,9 @@ dispatch(showToast({ message: `${item.title} added to cart with add-ons! 🎁` }
           <div>
             <div className="relative h-[360px] md:h-[440px] rounded-2xl overflow-hidden mb-4 shadow-[0_8px_40px_rgba(26,18,8,0.1)]">
               <img src={item.images[activeImage]} alt={item.title} className="w-full h-full object-cover" />
-              <button
-                onClick={() => setWishlist(!wishlist)}
-                className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${wishlist ? 'bg-[#D9776B] text-white' : 'bg-white/90 text-[#1A1208]'}`}
-              >
-                <FiHeart size={16} fill={wishlist ? 'white' : 'none'} />
-              </button>
+             <div className="absolute top-4 right-4">
+  <WishlistButton item={{ id: item.id, title: item.title, category: item.category, price: item.price, image: item.image, type: 'shop' }} size={16} className="w-10 h-10" />
+</div>
             </div>
 
             <div className="flex gap-3">
@@ -231,40 +229,37 @@ dispatch(showToast({ message: `${item.title} added to cart with add-ons! 🎁` }
             {/* ============================================
                 ADD-ONS SECTION — checkbox cards
             ============================================ */}
-            <div className="mb-6">
-              <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">
-                Make It Extra Special — Add Ons
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {item.addOns.map((addOn) => {
-                  const isSelected = selectedAddOns.includes(addOn.id)
-                  return (
-                    <label
-                      key={addOn.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                        isSelected ? 'border-[#C9A84C] bg-[#FDFAF4]' : 'border-[#EDE0C4] bg-white'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleAddOn(addOn.id)}
-                        className="accent-[#D9776B] w-4 h-4 cursor-pointer rounded shrink-0"
-                      />
-                      <img src={addOn.image} alt={addOn.name} className="w-11 h-11 rounded-lg object-cover shrink-0" />
-                      <div className="flex-1">
-                        <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#1A1208] font-medium leading-snug">
-                          {addOn.name}
-                        </p>
-                        <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#C9A84C] font-semibold">
-                          + {formatPrice(addOn.price)}
-                        </p>
-                      </div>
-                    </label>
-                  )
-                })}
-              </div>
-            </div>
+          {/* ============================================
+    CUSTOMIZE — "+" se modal khulta hai
+============================================ */}
+<div className="bg-white rounded-2xl p-5 shadow-[0_4px_16px_rgba(26,18,8,0.05)] mb-6">
+  <div className="flex items-center justify-between mb-3">
+    <div>
+      <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase">Make It Extra Special</h3>
+      <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#9E8A6A] mt-1">Add a card, teddy bear, chocolates & more</p>
+    </div>
+    <button onClick={() => setShowAddOnModal(true)} className="w-9 h-9 rounded-full bg-[#C9A84C] text-white flex items-center justify-center hover:bg-[#1A1208] transition-colors shrink-0">
+      <FiPlus size={18} />
+    </button>
+  </div>
+
+  {selectedAddOns.length > 0 && (
+    <div className="flex flex-wrap gap-2 pt-3 border-t border-[#EDE0C4]">
+      {selectedAddOns.map((addOnId) => {
+        const addOn = item.addOns.find((a) => a.id === addOnId)
+        if (!addOn) return null
+        return (
+          <div key={addOnId} style={{ fontFamily: "'Jost', sans-serif" }} className="flex items-center gap-2 bg-[#FDFAF4] rounded-full pl-3 pr-1.5 py-1.5 text-[0.72rem] text-[#1A1208]">
+            {addOn.name}
+            <button onClick={() => toggleAddOn(addOnId)} className="w-5 h-5 rounded-full bg-[#EDE0C4] flex items-center justify-center hover:bg-[#D9776B] hover:text-white transition-colors">
+              <FiX size={11} />
+            </button>
+          </div>
+        )
+      })}
+    </div>
+  )}
+</div>
 
             {/* ============================================
                 TOTAL + ADD TO CART
@@ -359,6 +354,15 @@ dispatch(showToast({ message: `${item.title} added to cart with add-ons! 🎁` }
           </div>
         )}
       </div>
+      {/* ADD-ON MODAL */}
+      {showAddOnModal && (
+        <AddOnModal
+          addOns={item.addOns}
+          selectedAddOns={selectedAddOns}
+          onToggle={toggleAddOn}
+          onClose={() => setShowAddOnModal(false)}
+        />
+      )}
     </div>
   )
 }

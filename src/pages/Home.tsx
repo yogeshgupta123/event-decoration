@@ -19,6 +19,7 @@ import FlowerPicker from '../components/home/FlowerPicker'
 import PersonaliseSection from '../components/home/PersonaliseSection'
 import FeaturedExperiences from '../components/home/FeaturedExperiences'
 import QuickCategories from '../components/home/QuickCategories'
+import ComboDeals from '../components/home/ComboDeals'
 
 function Home() {
   return (
@@ -29,6 +30,7 @@ function Home() {
        <TrustBar />
       <Occasions/>
       <FeaturedExperiences/>
+      <ComboDeals/>
       {/* <OccasionShop/> */}
       {/* <BestSelling/> */}
       <FlowerPicker/>

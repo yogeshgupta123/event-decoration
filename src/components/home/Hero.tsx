@@ -1,166 +1,200 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { FiSearch, FiMapPin, FiChevronDown } from 'react-icons/fi'
-import FadeIn from '../animations/FadeIn'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FiSearch, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 
 // ============================================
-// QUICK OCCASION PILLS — har pill kahin na kahin redirect karta hai
+// CAROUSEL SLIDES — har slide ka apna theme
 // ============================================
-const occasionPills = [
-  { label: 'Wedding', emoji: '💍', to: '/services?category=Wedding' },
-  { label: 'Birthday', emoji: '🎂', to: '/services?category=Birthday' },
-  { label: 'Engagement', emoji: '💝', to: '/services?category=Engagement' },
-  { label: 'Corporate', emoji: '🏢', to: '/services?category=Corporate' },
-  { label: 'Romantic', emoji: '🌹', to: '/experiences' },
-  { label: 'Surprise', emoji: '🎁', to: '/experiences' },
+const slides = [
+  {
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600',
+    label: 'Forever Begins Here',
+    heading: 'Plan The',
+    accent: 'Perfect Wedding',
+    description: 'From intimate ceremonies to grand celebrations — premium decor curated for your big day.',
+    cta: { label: 'Explore Wedding Packages', to: '/services?category=Wedding' },
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1600',
+    label: 'Pure Celebration',
+    heading: 'Birthdays',
+    accent: 'Made Magical',
+    description: 'Colorful, fun, and personalized birthday setups for every age, every theme.',
+    cta: { label: 'Browse Birthday Themes', to: '/services?category=Birthday' },
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600',
+    label: 'No Planning Needed',
+    heading: 'Experiences',
+    accent: 'Worth Remembering',
+    description: 'Romantic dinners, surprise setups, and curated date nights — just book and relax.',
+    cta: { label: 'Discover Experiences', to: '/experiences' },
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1600',
+    label: 'Delivered With Love',
+    heading: 'Thoughtful Gifts,',
+    accent: 'Delivered Fresh',
+    description: 'Flowers, cakes, hampers and personalized gifts — same-day delivery available.',
+    cta: { label: 'Shop Gifts & Cakes', to: '/shop' },
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1600',
+    label: 'Professional Excellence',
+    heading: 'Corporate Events,',
+    accent: 'Elevated',
+    description: 'Conferences, product launches, and team celebrations — executed flawlessly.',
+    cta: { label: 'Corporate Solutions', to: '/services?category=Corporate' },
+  },
 ]
-
-const cities = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Jaipur', 'Pune', 'Hyderabad']
 
 const Hero = () => {
   const navigate = useNavigate()
+  const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [city, setCity] = useState('Delhi NCR')
-  const [cityOpen, setCityOpen] = useState(false)
 
   // ============================================
-  // SEARCH — Enter dabane se ya button click se
-  // /services?search=... pe le jao
+  // AUTO-PLAY — har 5 second mein next slide
+  // hover karne par pause
   // ============================================
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      navigate(`/services?search=${encodeURIComponent(searchQuery.trim())}`)
-    }
-  }
+  useEffect(() => {
+    if (paused) return
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [paused])
+
+  const next = () => setCurrent((prev) => (prev + 1) % slides.length)
+  const prev = () => setCurrent((prev) => (prev - 1 + slides.length) % slides.length)
+
+ const handleSearch = () => {
+  if (searchQuery.trim()) navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+}
+
+  const slide = slides[current]
 
   return (
-    <section className="relative h-[560px] md:h-[660px] flex items-center overflow-hidden">
+    <section
+      className="relative h-[560px] md:h-[640px] overflow-hidden"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* ============================================
+          BACKGROUND — crossfade between slides
+      ============================================ */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, scale: 1.06 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.9, ease: 'easeInOut' }}
+          className="absolute inset-0"
+        >
+          <img src={slide.image} alt={slide.heading} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(26,18,8,0.75) 0%, transparent 50%)' }} />
+        </motion.div>
+      </AnimatePresence>
 
       {/* ============================================
-          BACKGROUND — slow zoom (Ken Burns effect)
-          motion.div scale 1 → 1.1 over 20 seconds
+          CONTENT — text changes per slide
       ============================================ */}
-      <motion.div
-        className="absolute inset-0"
-        initial={{ scale: 1 }}
-        animate={{ scale: 1.1 }}
-        transition={{ duration: 20, ease: 'linear' }}
-      >
-        <img
-          src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1600"
-          alt="Celebration"
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
-
-      <div className="absolute inset-0 bg-black/50" />
-      <div
-        className="absolute inset-0"
-        style={{ background: 'linear-gradient(to top, rgba(26,18,8,0.6) 0%, transparent 55%)' }}
-      />
-
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-[680px]">
-
-          {/* Badge */}
-          <FadeIn delay={0.1}>
-            <div className="inline-flex items-center gap-2 border border-[#C9A84C]/50 rounded-full px-4 py-1.5 mb-5">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
-              <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#F5E6B8] tracking-[0.25em]">
-                10,000+ CELEBRATIONS CREATED
-              </span>
-            </div>
-          </FadeIn>
-
-          {/* Heading — search-first */}
-          <FadeIn delay={0.2}>
-            <h1
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              className="text-[2.4rem] md:text-[3.6rem] text-white font-semibold leading-[1.15] mb-6"
+      <div className="absolute inset-0 flex items-center z-10 pb-24 md:pb-28">
+        <div className="container mx-auto px-6">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="max-w-[620px]"
             >
-              What Are You{' '}
-              <span className="italic text-[#F5E6B8]">Celebrating?</span>
-            </h1>
-          </FadeIn>
-
-          {/* ============================================
-              SEARCH BAR — Location + Search input + Button
-          ============================================ */}
-          <FadeIn delay={0.3}>
-            <div className="flex flex-col sm:flex-row items-stretch gap-2 bg-white rounded-2xl sm:rounded-full p-2 shadow-2xl mb-6">
-
-              {/* Location Selector */}
-              <div className="relative shrink-0">
-                <button
-                  onClick={() => setCityOpen(!cityOpen)}
-                  className="flex items-center gap-2 px-4 py-3 sm:border-r border-[#EDE0C4] w-full sm:w-auto"
-                >
-                  <FiMapPin size={15} color="#C9A84C" />
-                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#1A1208] font-medium whitespace-nowrap">
-                    {city}
-                  </span>
-                  <FiChevronDown size={13} color="#9E8A6A" className={`transition-transform ${cityOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {cityOpen && (
-                  <div className="absolute top-[calc(100%+8px)] left-0 bg-white rounded-xl shadow-[0_12px_40px_rgba(26,18,8,0.15)] border border-[#EDE0C4] z-20 overflow-hidden w-[180px]">
-                    {cities.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => { setCity(c); setCityOpen(false) }}
-                        style={{ fontFamily: "'Jost', sans-serif" }}
-                        className={`w-full text-left px-4 py-2.5 text-[0.8rem] hover:bg-[#FDFAF4] transition-colors ${c === city ? 'text-[#C9A84C] font-semibold' : 'text-[#5C4A1E]'}`}
-                      >
-                        {c}
-                      </button>
-                    ))}
-                  </div>
-                )}
+              <div className="inline-flex items-center gap-2 border border-[#C9A84C]/50 rounded-full px-4 py-1.5 mb-5">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
+                <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#F5E6B8] tracking-[0.25em]">
+                  {slide.label.toUpperCase()}
+                </span>
               </div>
 
-              {/* Search Input */}
-              <div className="flex-1 flex items-center gap-2 px-4 py-3">
-                <FiSearch size={15} color="#C9A84C" />
-                <input
-                  type="text"
-                  placeholder="Search experiences, decoration, gifts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  className="flex-1 bg-transparent outline-none text-[0.85rem] text-[#1A1208] placeholder-[#9E8A6A]"
-                />
-              </div>
+              <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2.4rem] md:text-[3.6rem] text-white font-semibold leading-[1.15] mb-4">
+                {slide.heading}{' '}
+                <span className="italic text-[#F5E6B8]">{slide.accent}</span>
+              </h1>
 
-              {/* Search Button */}
-              <button
-                onClick={handleSearch}
+              <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.9rem] text-white/80 leading-relaxed mb-7 max-w-[460px]">
+                {slide.description}
+              </p>
+
+              <Link
+                to={slide.cta.to}
                 style={{ fontFamily: "'Jost', sans-serif" }}
-                className="bg-[#C9A84C] text-white rounded-xl sm:rounded-full px-7 py-3 text-[0.75rem] tracking-[0.2em] uppercase font-semibold hover:bg-[#1A1208] transition-colors shrink-0"
+                className="inline-block bg-[#C9A84C] text-white px-8 py-4 text-[0.78rem] tracking-[0.2em] uppercase font-semibold hover:bg-[#E8C97A] hover:text-[#1A1208] transition-all rounded-full"
               >
-                Search
-              </button>
-            </div>
-          </FadeIn>
+                {slide.cta.label}
+              </Link>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
 
-          {/* Occasion Pills */}
-          <FadeIn delay={0.4}>
-            <div className="flex flex-wrap gap-3">
-              {occasionPills.map((pill) => (
-                <Link
-                  key={pill.label}
-                  to={pill.to}
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 rounded-full px-4 py-2.5 text-white text-[0.8rem] font-medium transition-colors"
-                >
-                  <span>{pill.emoji}</span>
-                  {pill.label}
-                </Link>
-              ))}
-            </div>
-          </FadeIn>
+      {/* ============================================
+          ARROWS — left/right
+      ============================================ */}
+      <button
+        onClick={prev}
+        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 backdrop-blur-sm border border-white/30 items-center justify-center text-white hover:bg-white/25 transition-colors"
+      >
+        <FiChevronLeft size={20} />
+      </button>
+      <button
+        onClick={next}
+        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/15 backdrop-blur-sm border border-white/30 items-center justify-center text-white hover:bg-white/25 transition-colors"
+      >
+        <FiChevronRight size={20} />
+      </button>
 
+      {/* ============================================
+          BOTTOM BAR — Search + Dot indicators
+      ============================================ */}
+      <div className="absolute bottom-6 left-0 right-0 z-20">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-4 md:justify-between">
+
+          {/* Compact Search Bar */}
+          <div className="w-full md:max-w-[420px] bg-white rounded-full p-1.5 flex items-center gap-2 shadow-2xl">
+            <FiSearch size={15} color="#C9A84C" className="ml-3" />
+            <input
+              type="text"
+              placeholder="Search experiences, decor, gifts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="flex-1 bg-transparent outline-none text-[0.82rem] text-[#1A1208] placeholder-[#9E8A6A]"
+            />
+            <button
+              onClick={handleSearch}
+              style={{ fontFamily: "'Jost', sans-serif" }}
+              className="bg-[#C9A84C] text-white rounded-full px-5 py-2.5 text-[0.7rem] tracking-[0.15em] uppercase font-semibold hover:bg-[#1A1208] transition-colors shrink-0"
+            >
+              Search
+            </button>
+          </div>
+
+          {/* Dot Indicators */}
+          <div className="flex gap-2">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`h-[6px] rounded-full transition-all ${i === current ? 'w-8 bg-[#C9A84C]' : 'w-[6px] bg-white/40 hover:bg-white/60'}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

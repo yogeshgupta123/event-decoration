@@ -1,14 +1,33 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { FiStar, FiMapPin, FiClock, FiCheck, FiChevronLeft, FiCalendar, FiUsers, FiHeart } from 'react-icons/fi'
+import { FiStar, FiMapPin, FiClock, FiCheck, FiChevronLeft, FiCalendar, FiUsers, FiHeart, FiPlus, FiX } from 'react-icons/fi'
 import { experiences } from '../data/experiences'
 import { useAppDispatch } from '../store/hooks'
 import { addToCart } from '../store/cartSlice'
 import { showToast } from '../store/uiSlice'
 import { StaggerContainer, StaggerItem } from '../components/animations/StaggerContainer'
 import ReviewsSection from '../components/ui/ReviewsSection'
+import AddOnModal from '../components/ui/AddOnModal'
+import AvailabilityCalendar from '../components/ui/AvailabilityCalendar'
+
 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
+
+// ============================================
+// EXPERIENCE ADD-ONS — categories ke saath, filter ke liye
+// ============================================
+const addOnCategories = ['Flowers', 'Photography', 'Food & Drinks', 'Decor', 'Music']
+
+const experienceAddOns = [
+  { id: 7001, name: 'Bouquet of Roses', price: 599, category: 'Flowers', image: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=200' },
+  { id: 7002, name: 'Professional Photography (1hr)', price: 1999, category: 'Photography', image: 'https://images.unsplash.com/photo-1530023367847-a683933f4172?w=200' },
+  { id: 7003, name: 'Personalized Cake (1kg)', price: 899, category: 'Food & Drinks', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=200' },
+  { id: 7004, name: 'Champagne Bottle', price: 1499, category: 'Food & Drinks', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=200' },
+  { id: 7005, name: 'Extra Decoration Setup', price: 1299, category: 'Decor', image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=200' },
+  { id: 7006, name: 'Live Acoustic Music (30min)', price: 2499, category: 'Music', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=200' },
+  { id: 7007, name: 'Chocolate Box', price: 499, category: 'Food & Drinks', image: 'https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=200' },
+  { id: 7008, name: 'Fairy Lights Setup', price: 799, category: 'Decor', image: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=200' },
+]
 
 const ExperienceDetail = () => {
   const { id } = useParams()
@@ -22,6 +41,9 @@ const ExperienceDetail = () => {
   const [bookingDate, setBookingDate] = useState('')
   const [bookingTime, setBookingTime] = useState('')
   const [guestCount, setGuestCount] = useState('2')
+  const [selectedAddOns, setSelectedAddOns] = useState<number[]>([])
+  const [showAddOnModal, setShowAddOnModal] = useState(false)
+const [showCalendar, setShowCalendar] = useState(false)
 
   if (!exp) {
     return (
@@ -34,8 +56,19 @@ const ExperienceDetail = () => {
     )
   }
 
+  const toggleAddOn = (addOnId: number) => {
+    setSelectedAddOns(selectedAddOns.includes(addOnId) ? selectedAddOns.filter((a) => a !== addOnId) : [...selectedAddOns, addOnId])
+  }
+
+  const addOnsTotal = experienceAddOns.filter((a) => selectedAddOns.includes(a.id)).reduce((sum, a) => sum + a.price, 0)
+  const totalPrice = exp.price + addOnsTotal
+
   const handleBookNow = () => {
     dispatch(addToCart({ id: exp.id, title: exp.title, category: 'Experience', price: exp.price, image: exp.image }))
+    selectedAddOns.forEach((addOnId) => {
+      const addOn = experienceAddOns.find((a) => a.id === addOnId)
+      if (addOn) dispatch(addToCart({ id: addOn.id, title: addOn.name, category: 'Add-on', price: addOn.price, image: addOn.image }))
+    })
     dispatch(showToast({ message: 'Experience added! Redirecting to checkout...' }))
     navigate('/checkout')
   }
@@ -104,7 +137,7 @@ const ExperienceDetail = () => {
             </div>
           </div>
 
-          {/* RIGHT — Info + Booking */}
+          {/* RIGHT — Scrollable content */}
           <div>
             <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#D9776B] tracking-[0.25em] uppercase font-semibold mb-2">{exp.category}</p>
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] md:text-[2.6rem] text-[#1A1208] font-semibold leading-tight mb-4">{exp.title}</h1>
@@ -138,18 +171,64 @@ const ExperienceDetail = () => {
 
             <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.85rem] text-[#5C4A1E] leading-relaxed mb-6">{exp.description}</p>
 
+            {/* ============================================
+                CUSTOMIZE — "+" se modal khulta hai
+            ============================================ */}
+            <div className="bg-white rounded-2xl p-5 shadow-[0_4px_16px_rgba(26,18,8,0.05)] mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase">Customize Your Experience</h3>
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#9E8A6A] mt-1">Add flowers, photography, cake & more</p>
+                </div>
+                <button
+                  onClick={() => setShowAddOnModal(true)}
+                  className="w-9 h-9 rounded-full bg-[#C9A84C] text-white flex items-center justify-center hover:bg-[#1A1208] transition-colors shrink-0"
+                >
+                  <FiPlus size={18} />
+                </button>
+              </div>
+
+              {selectedAddOns.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-3 border-t border-[#EDE0C4]">
+                  {selectedAddOns.map((addOnId) => {
+                    const addOn = experienceAddOns.find((a) => a.id === addOnId)
+                    if (!addOn) return null
+                    return (
+                      <div key={addOnId} style={{ fontFamily: "'Jost', sans-serif" }} className="flex items-center gap-2 bg-[#FDFAF4] rounded-full pl-3 pr-1.5 py-1.5 text-[0.72rem] text-[#1A1208]">
+                        {addOn.name}
+                        <button onClick={() => toggleAddOn(addOnId)} className="w-5 h-5 rounded-full bg-[#EDE0C4] flex items-center justify-center hover:bg-[#D9776B] hover:text-white transition-colors">
+                          <FiX size={11} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* BOOKING BOX */}
             <div className="bg-white rounded-2xl p-5 shadow-[0_4px_16px_rgba(26,18,8,0.06)]">
               <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-4">Reserve Your Experience</h3>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label style={{ fontFamily: "'Jost', sans-serif" }} className="block text-[0.65rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-2">Date</label>
-                  <div className="relative">
-                    <FiCalendar size={14} color="#C9A84C" className="absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input type="date" value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.8rem' }} className="w-full bg-[#FDFAF4] border border-[#EDE0C4] rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-[#C9A84C] transition-colors text-[#1A1208]" />
-                  </div>
-                </div>
+  <label style={{ fontFamily: "'Jost', sans-serif" }} className="block text-[0.65rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-2">Date</label>
+  <button
+    onClick={() => setShowCalendar(!showCalendar)}
+    type="button"
+    className="relative w-full flex items-center gap-2 bg-[#FDFAF4] border border-[#EDE0C4] rounded-xl pl-9 pr-3 py-2.5 text-left"
+  >
+    <FiCalendar size={14} color="#C9A84C" className="absolute left-3 top-1/2 -translate-y-1/2" />
+    <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.8rem' }} className={bookingDate ? 'text-[#1A1208]' : 'text-[#9E8A6A]'}>
+      {bookingDate || 'Select date'}
+    </span>
+  </button>
+  {showCalendar && (
+    <div className="mt-2">
+      <AvailabilityCalendar selectedDate={bookingDate} onSelectDate={(date) => { setBookingDate(date); setShowCalendar(false) }} />
+    </div>
+  )}
+</div>
                 <div>
                   <label style={{ fontFamily: "'Jost', sans-serif" }} className="block text-[0.65rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-2">Time Slot</label>
                   <select value={bookingTime} onChange={(e) => setBookingTime(e.target.value)} style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.8rem' }} className="w-full bg-[#FDFAF4] border border-[#EDE0C4] rounded-xl px-3 py-2.5 outline-none focus:border-[#C9A84C] transition-colors text-[#1A1208]">
@@ -172,10 +251,28 @@ const ExperienceDetail = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-[#EDE0C4] mb-4">
+              {/* Price Breakdown */}
+              <div className="space-y-2 mb-4 pb-4 border-b border-[#EDE0C4]">
+                <div className="flex justify-between">
+                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#5C4A1E]">{exp.title}</span>
+                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.8rem] text-[#1A1208] font-medium">{formatPrice(exp.price)}</span>
+                </div>
+                {selectedAddOns.map((addOnId) => {
+                  const addOn = experienceAddOns.find((a) => a.id === addOnId)
+                  if (!addOn) return null
+                  return (
+                    <div key={addOnId} className="flex justify-between">
+                      <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A]">+ {addOn.name}</span>
+                      <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A]">{formatPrice(addOn.price)}</span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.62rem] text-[#9E8A6A] uppercase tracking-wider">Starting From</p>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] text-[#1A1208] font-bold">{formatPrice(exp.price)}</p>
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.62rem] text-[#9E8A6A] uppercase tracking-wider">Total</p>
+                  <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[2rem] text-[#1A1208] font-bold">{formatPrice(totalPrice)}</p>
                 </div>
               </div>
 
@@ -187,6 +284,7 @@ const ExperienceDetail = () => {
           </div>
         </div>
 
+        {/* REVIEWS — as is, jaisa hai waisa hi */}
         <ReviewsSection />
 
         {relatedExperiences.length > 0 && (
@@ -210,6 +308,17 @@ const ExperienceDetail = () => {
           </div>
         )}
       </div>
+
+      {/* ADD-ON MODAL */}
+      {showAddOnModal && (
+        <AddOnModal
+          addOns={experienceAddOns}
+          categories={addOnCategories}
+          selectedAddOns={selectedAddOns}
+          onToggle={toggleAddOn}
+          onClose={() => setShowAddOnModal(false)}
+        />
+      )}
     </div>
   )
 }

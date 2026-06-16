@@ -1,0 +1,107 @@
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { FiX } from 'react-icons/fi'
+
+interface AddOn {
+  id: number
+  name: string
+  price: number
+  image: string
+  category?: string
+}
+
+interface AddOnModalProps {
+  addOns: AddOn[]
+  categories?: string[]
+  selectedAddOns: number[]
+  onToggle: (id: number) => void
+  onClose: () => void
+}
+
+const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
+
+// ============================================
+// REUSABLE MODAL — "+" click karne se khulta hai
+// filter tabs + checkbox list + "Done" button
+// ============================================
+const AddOnModal = ({ addOns, categories, selectedAddOns, onToggle, onClose }: AddOnModalProps) => {
+  const [filter, setFilter] = useState('All')
+
+  const filtered = filter === 'All' ? addOns : addOns.filter((a) => a.category === filter)
+  const addedTotal = addOns.filter((a) => selectedAddOns.includes(a.id)).reduce((sum, a) => sum + a.price, 0)
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      {/* Backdrop — click karke band ho jaye */}
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="relative bg-white rounded-2xl w-full max-w-[480px] max-h-[80vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(26,18,8,0.25)]"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-[#EDE0C4]">
+          <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.3rem] text-[#1A1208] font-semibold">
+            Customize Your Experience
+          </h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#FDFAF4] transition-colors">
+            <FiX size={18} />
+          </button>
+        </div>
+
+        {/* Filter Tabs */}
+        {categories && (
+          <div className="flex gap-2 px-5 py-3 overflow-x-auto scrollbar-hide border-b border-[#EDE0C4]">
+            {['All', ...categories].map((c) => (
+              <button
+                key={c}
+                onClick={() => setFilter(c)}
+                style={{ fontFamily: "'Jost', sans-serif" }}
+                className={`shrink-0 px-4 py-1.5 rounded-full text-[0.72rem] font-medium transition-all ${
+                  filter === c ? 'bg-[#1A1208] text-white' : 'bg-[#FDFAF4] text-[#5C4A1E] border border-[#EDE0C4]'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          {filtered.map((addOn) => {
+            const isSelected = selectedAddOns.includes(addOn.id)
+            return (
+              <label
+                key={addOn.id}
+                className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${isSelected ? 'border-[#C9A84C] bg-[#FDFAF4]' : 'border-[#EDE0C4] bg-white'}`}
+              >
+                <input type="checkbox" checked={isSelected} onChange={() => onToggle(addOn.id)} className="accent-[#D9776B] w-4 h-4 cursor-pointer rounded shrink-0" />
+                <img src={addOn.image} alt={addOn.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                <div className="flex-1">
+                  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#1A1208] font-medium">{addOn.name}</p>
+                  {addOn.category && <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A]">{addOn.category}</p>}
+                </div>
+                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.82rem] text-[#C9A84C] font-semibold shrink-0">+ {formatPrice(addOn.price)}</p>
+              </label>
+            )
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t border-[#EDE0C4] flex items-center justify-between bg-[#FDFAF4]">
+          <div>
+            <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#9E8A6A]">{selectedAddOns.length} item(s) selected</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.1rem] text-[#1A1208] font-bold">+ {formatPrice(addedTotal)}</p>
+          </div>
+          <button onClick={onClose} style={{ fontFamily: "'Jost', sans-serif" }} className="bg-[#C9A84C] text-white rounded-full px-8 py-3 text-[0.75rem] tracking-[0.15em] uppercase font-semibold hover:bg-[#1A1208] transition-colors">
+            Done
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+export default AddOnModal

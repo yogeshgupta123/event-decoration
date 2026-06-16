@@ -1,18 +1,19 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-// ============================================
-// React Router PAGE CHANGE par scroll position
-// RESET nahi karta — hum manually karenge
-// ============================================
 const ScrollToTop = () => {
   const { pathname } = useLocation()
 
   useEffect(() => {
+    // ============================================
+    // Teeno jagah scroll reset karo — cross-browser safe
+    // ============================================
     window.scrollTo(0, 0)
+    document.documentElement.scrollTo(0, 0)
+    document.body.scrollTo(0, 0)
   }, [pathname])
 
-  return null  // kuch render nahi karta, sirf "effect" hai
+  return null
 }
 
 export default ScrollToTop
