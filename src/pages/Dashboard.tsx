@@ -87,7 +87,11 @@ const Dashboard = () => {
                   {item.label}
                 </button>
               ))}
+              <Link to="/referral" style={{ fontFamily: "'Jost', sans-serif" }} className="block text-[0.8rem] text-[#C9A84C] mt-2 ml-4 underline">
+  🎁 Refer & Earn ₹200
+</Link>
             </div>
+            
           </aside>
 
           {/* MAIN CONTENT */}

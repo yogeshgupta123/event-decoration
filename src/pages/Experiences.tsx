@@ -35,8 +35,7 @@ const Experiences = () => {
       <div className="container mx-auto px-6 py-10">
 
         {/* CATEGORY TABS */}
-        <div className="flex gap-3 mb-10 overflow-x-auto scrollbar-hide pb-2">
-          {['All', ...experienceCategories].map((cat) => (
+<div className="flex gap-2.5 mb-10 overflow-x-auto scrollbar-hide pb-2 pt-1">          {['All', ...experienceCategories].map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -115,11 +114,11 @@ const Experiences = () => {
                   </div>
 
                   {/* "Book Now" — appears on hover */}
-                  <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-[#C9A84C] py-3 flex items-center justify-center gap-2">
-                    <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-white text-[0.72rem] tracking-[0.2em] uppercase font-semibold">
+                  <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-[#C9A84C] py-3.5 flex items-center justify-center gap-1.5">
+                    <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-white text-[0.68rem] tracking-[0.15em] uppercase font-semibold">
                       View & Book
                     </span>
-                    <FiArrowRight size={13} color="white" />
+                    <FiArrowRight size={12} color="white" />
                   </div>
                 </div>
 

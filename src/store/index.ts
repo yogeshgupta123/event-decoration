@@ -3,7 +3,8 @@ import authReducer from './authSlice'
 import cartReducer from './cartSlice'
 import uiReducer from './uiSlice'
 import wishlistReducer from './wishlistSlice'
-
+import recentlyViewedReducer from './recentlyViewedSlice.ts'
+// reducer mein: recentlyViewed: recentlyViewedReducer,
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,7 @@ export const store = configureStore({
     cart: cartReducer,
     ui: uiReducer,
     wishlist: wishlistReducer,
-    
+ recentlyViewed: recentlyViewedReducer,    
   },
 })
 

@@ -20,13 +20,16 @@ import PersonaliseSection from '../components/home/PersonaliseSection'
 import FeaturedExperiences from '../components/home/FeaturedExperiences'
 import QuickCategories from '../components/home/QuickCategories'
 import ComboDeals from '../components/home/ComboDeals'
+import RecentlyViewed from '../components/home/RecentlyViewed'
 
 function Home() {
   return (
     <div>
       <Hero />
       <QuickCategories/>
+      <RecentlyViewed/>
       <StatsBar/>
+
        <TrustBar />
       <Occasions/>
       <FeaturedExperiences/>

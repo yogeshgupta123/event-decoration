@@ -69,7 +69,7 @@ const navLinks = [
   {
     label: "Father's Day",
     emoji: "👨",
-    to: "/services?category=FathersDay",
+    to: "/services?category=Birthday",
     categories: [
       {
         title: "Gifts",
@@ -210,7 +210,7 @@ const navLinks = [
   {
     label: "Anniversary",
     emoji: "💍",
-    to: "/services?category=Anniversary",
+    to: "/services?category=Wedding",
     categories: [
       {
         title: "Decoration",
@@ -643,6 +643,10 @@ const Navbar = () => {
 
   const cartItems = useAppSelector((state) => state.cart.items);
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+const [city, setCity] = useState('Delhi NCR')
+const [cityOpen, setCityOpen] = useState(false)
+const cities = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Jaipur', 'Pune', 'Hyderabad']
+
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -660,11 +664,11 @@ const Navbar = () => {
   };
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  if (e.key === 'Enter' && searchQuery.trim()) {
-    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-    setSearchQuery('')
-  }
-};
+    if (e.key === "Enter" && searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <>
@@ -708,19 +712,30 @@ const Navbar = () => {
             </Link>
 
             {/* LOCATION — desktop */}
-            <button className="hidden lg:flex items-center gap-1.5 hover:text-[#C9A84C] transition-colors shrink-0 border border-[#EDE0C4] rounded-full px-3 py-1.5">
-              <FiMapPin size={13} color="#C9A84C" />
-              <span
-                style={{
-                  fontFamily: "'Jost', sans-serif",
-                  fontSize: "0.72rem",
-                  color: "#5C4A1E",
-                }}
-              >
-                Delhi NCR
-              </span>
-              <FiChevronDown size={11} color="#9E8A6A" />
-            </button>
+            <div className="relative hidden lg:block">
+  <button
+    onClick={() => setCityOpen(!cityOpen)}
+    className="flex items-center gap-1.5 hover:text-[#C9A84C] transition-colors shrink-0 border border-[#EDE0C4] rounded-full px-3 py-1.5"
+  >
+    <FiMapPin size={13} color="#C9A84C" />
+    <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.72rem', color: '#5C4A1E' }}>{city}</span>
+    <FiChevronDown size={11} color="#9E8A6A" />
+  </button>
+  {cityOpen && (
+    <div className="absolute top-[calc(100%+8px)] left-0 bg-white rounded-xl shadow-[0_12px_40px_rgba(26,18,8,0.15)] border border-[#EDE0C4] z-20 overflow-hidden w-[160px]">
+      {cities.map((c) => (
+        <button
+          key={c}
+          onClick={() => { setCity(c); setCityOpen(false) }}
+          style={{ fontFamily: "'Jost', sans-serif" }}
+          className={`w-full text-left px-4 py-2.5 text-[0.78rem] hover:bg-[#FDFAF4] transition-colors ${c === city ? 'text-[#C9A84C] font-semibold' : 'text-[#5C4A1E]'}`}
+        >
+          {c}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
             {/* SEARCH BAR */}
             <div className="hidden md:flex flex-1 max-w-[480px] items-center bg-[#FDFAF4] border border-[#EDE0C4] rounded-full px-4 py-2.5 gap-3 hover:border-[#C9A84C] transition-colors focus-within:border-[#C9A84C] focus-within:shadow-[0_0_0_3px_rgba(201,168,76,0.1)]">
@@ -879,14 +894,18 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-[80px] bg-transparent outline-none placeholder-[#9E8A6A] text-[#1A1208]"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearch}
+                  className="w-full bg-transparent outline-none placeholder-[#9E8A6A] text-[#1A1208]"
                   style={{
                     fontFamily: "'Jost', sans-serif",
                     fontSize: "0.72rem",
                   }}
                 />
               </div>
-              <Link
+              {/* Mobile cart working */}
+              {/* <Link
                 to="/cart"
                 className="relative text-[#1A1208] hover:text-[#C9A84C] transition-colors p-1"
               >
@@ -896,12 +915,12 @@ const Navbar = () => {
                     {cartCount}
                   </span>
                 )}
-              </Link>
+              </Link> */}
               <button
                 onClick={() =>
                   mobileOpen ? closeMobile() : setMobileOpen(true)
                 }
-                className="text-[#1A1208] p-1"
+                className="text-[#1A1208] p-1 shrink-0"
               >
                 {mobileOpen ? <FiX size={22} /> : <FiMenu size={22} />}
               </button>
@@ -925,7 +944,7 @@ const Navbar = () => {
                 onMouseEnter={() => setActiveMenu(link.label)}
                 onClick={() => {
                   setActiveMenu(null);
-                  navigate(link.to)
+                  navigate(link.to);
                 }}
                 style={{ fontFamily: "'Jost', sans-serif" }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-[0.72rem] font-medium tracking-wide transition-all shrink-0 ${
@@ -1117,19 +1136,27 @@ const Navbar = () => {
                       </span>
                     </div>
                     <ul>
-  {cat.items.map((item) => (
-    <li key={item}>
-      <Link
-        to={navLinks.find((l) => l.label === activeMobileCategory)?.to || '/services'}
-        onClick={closeMobile}
-        className="w-full text-left px-7 py-3 hover:text-[#D9776B] hover:bg-[#FDFAF4] transition-colors border-b border-[#EDE0C4]/40 block"
-        style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.8rem', color: '#1A1208' }}
-      >
-        {item}
-      </Link>
-    </li>
-  ))}
-</ul>
+                      {cat.items.map((item) => (
+                        <li key={item}>
+                          <Link
+                            to={
+                              navLinks.find(
+                                (l) => l.label === activeMobileCategory,
+                              )?.to || "/services"
+                            }
+                            onClick={closeMobile}
+                            className="w-full text-left px-7 py-3 hover:text-[#D9776B] hover:bg-[#FDFAF4] transition-colors border-b border-[#EDE0C4]/40 block"
+                            style={{
+                              fontFamily: "'Jost', sans-serif",
+                              fontSize: "0.8rem",
+                              color: "#1A1208",
+                            }}
+                          >
+                            {item}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
             </div>

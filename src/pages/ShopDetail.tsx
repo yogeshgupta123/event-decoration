@@ -6,6 +6,7 @@ import { FiStar,  FiShoppingBag, FiCheck, FiChevronLeft, FiMinus, FiX , FiPlus, 
 import { useAppDispatch } from '../store/hooks'
 import { addToCart, increaseQuantity } from '../store/cartSlice'
 import { shopItems } from '../data/shopItems'
+
 import { StaggerContainer, StaggerItem } from '../components/animations/StaggerContainer'
  import WishlistButton from '../components/ui/WishlistButton'
  
@@ -22,7 +23,7 @@ const ShopDetail = () => {
   const [selectedAddOns, setSelectedAddOns] = useState<number[]>([])
   const [showAddOnModal, setShowAddOnModal] = useState(false)
   const [added, setAdded] = useState(false)
-
+const [giftMessage, setGiftMessage] = useState('')
   // ============================================
   // AGAR ITEM NA MILE — friendly message dikhao
   // ============================================
@@ -225,6 +226,22 @@ dispatch(showToast({ message: `${item.title} added to cart with add-ons! 🎁` }
                 </button>
               </div>
             </div>
+
+            <div className="mb-6">
+  <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">
+    Add a Personal Message (Optional)
+  </h3>
+  <textarea
+    value={giftMessage}
+    onChange={(e) => setGiftMessage(e.target.value)}
+    placeholder="Write a heartfelt message for the recipient..."
+    rows={3}
+    maxLength={150}
+    style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.82rem' }}
+    className="w-full bg-white border border-[#EDE0C4] rounded-xl p-4 outline-none focus:border-[#C9A84C] transition-colors text-[#1A1208] placeholder-[#9E8A6A] resize-none"
+  />
+  <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.65rem] text-[#9E8A6A] mt-1 text-right">{giftMessage.length}/150</p>
+</div>
 
             {/* ============================================
                 ADD-ONS SECTION — checkbox cards
