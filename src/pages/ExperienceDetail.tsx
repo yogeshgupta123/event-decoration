@@ -64,14 +64,14 @@ const [showCalendar, setShowCalendar] = useState(false)
   const totalPrice = exp.price + addOnsTotal
 
   const handleBookNow = () => {
-    dispatch(addToCart({ id: exp.id, title: exp.title, category: 'Experience', price: exp.price, image: exp.image }))
-    selectedAddOns.forEach((addOnId) => {
-      const addOn = experienceAddOns.find((a) => a.id === addOnId)
-      if (addOn) dispatch(addToCart({ id: addOn.id, title: addOn.name, category: 'Add-on', price: addOn.price, image: addOn.image }))
-    })
-    dispatch(showToast({ message: 'Experience added! Redirecting to checkout...' }))
-    navigate('/checkout')
-  }
+  dispatch(addToCart({ id: exp.id, title: exp.title, category: 'Experience', price: exp.price, image: exp.image }))
+  selectedAddOns.forEach((addOnId) => {
+    const addOn = experienceAddOns.find((a) => a.id === addOnId)
+    if (addOn) dispatch(addToCart({ id: addOn.id, title: addOn.name, category: 'Add-on', price: addOn.price, image: addOn.image }))
+  })
+  dispatch(showToast({ message: 'Experience added! Redirecting to checkout...' }))
+  navigate('/checkout', { state: { eventDate: bookingDate, eventTime: bookingTime, guestCount } })
+}
 
   const scrollToReviews = () => {
     document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })

@@ -1165,7 +1165,7 @@ const cities = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Jaipur', 'Pune', 'Hyderabad
       </div>
 
       {/* SPACER */}
-      <div className="h-[70px] md:h-[70px]" />
+      <div className="h-[72px] md:h-[118px]" />
     </>
   );
 };

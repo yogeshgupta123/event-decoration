@@ -41,26 +41,26 @@ const AddOnModal = ({ addOns, categories, selectedAddOns, onToggle, onClose }: A
         className="relative bg-white rounded-2xl w-full max-w-[480px] max-h-[80vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(26,18,8,0.25)]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-[#EDE0C4]">
-  <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.35rem] text-[#1A1208] font-semibold leading-snug">
-         Customize Your Experience
-          </h3>
-          <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#FDFAF4] transition-colors">
-            <FiX size={18} />
-          </button>
-        </div>
+       <div className="flex items-center justify-between px-6 pt-6 pb-4">
+  <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.4rem] text-[#1A1208] font-semibold leading-snug">
+    Customize Your Experience
+  </h3>
+  <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#FDFAF4] transition-colors shrink-0">
+    <FiX size={18} />
+  </button>
+</div>
 
         {/* Filter Tabs */}
        {categories && (
-  <div className="flex gap-2.5 px-5 py-4 overflow-x-auto scrollbar-hide border-b border-[#EDE0C4]">
+  <div className="flex gap-2 px-6 pb-4 overflow-x-auto scrollbar-hide border-b border-[#EDE0C4]">
     {['All', ...categories].map((c) => (
       <button
         key={c}
         onClick={() => setFilter(c)}
         style={{ fontFamily: "'Jost', sans-serif" }}
-        className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-[0.72rem] font-medium transition-all ${
-          filter === c ? 'bg-[#1A1208] text-white' : 'bg-[#FDFAF4] text-[#5C4A1E] border border-[#EDE0C4]'
-        }`}
+        className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-[0.74rem] font-medium transition-all border ${
+    filter === c ? 'bg-[#1A1208] text-white border-[#1A1208]' : 'bg-white text-[#5C4A1E] border-[#EDE0C4] hover:border-[#C9A84C]'
+  }`}
       >
         {c}
       </button>

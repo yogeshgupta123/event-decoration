@@ -59,7 +59,7 @@ const Experiences = () => {
             - Rating stars visible
             - "Book Now" appears on hover
         ============================================ */}
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StaggerContainer key={activeCategory} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredExperiences.map((exp) => (
             <StaggerItem key={exp.id}>
               <Link

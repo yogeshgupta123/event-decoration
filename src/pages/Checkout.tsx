@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FiCalendar, FiMapPin, FiUser, FiPhone, FiMail, FiCheck, FiChevronRight, FiLock } from 'react-icons/fi'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { clearCart } from '../store/cartSlice'
-
+import { useLocation } from 'react-router-dom'
 
 
 const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
@@ -11,20 +11,24 @@ const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 const steps = ['Event Details', 'Personal Info', 'Review & Pay']
 
 const Checkout = () => {
+
+  const location = useLocation()
+const prefill = location.state as { eventDate?: string; eventTime?: string; guestCount?: string } | null
+
   const [currentStep, setCurrentStep] = useState(0)
   const [form, setForm] = useState({
-    eventDate: '',
-    eventTime: '',
-    venue: '',
-    city: '',
-    guestCount: '',
-    specialRequests: '',
-    name: '',
-    email: '',
-    phone: '',
-    alternatePhone: '',
-    paymentMode: 'full',
-  })
+  eventDate: prefill?.eventDate || '',
+  eventTime: prefill?.eventTime || '',
+  venue: '',
+  city: '',
+  guestCount: prefill?.guestCount || '',
+  specialRequests: '',
+  name: '',
+  email: '',
+  phone: '',
+  alternatePhone: '',
+  paymentMode: 'full',
+})
 
   const navigate = useNavigate()
 const dispatch = useAppDispatch()

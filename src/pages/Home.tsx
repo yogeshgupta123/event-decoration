@@ -21,6 +21,9 @@ import FeaturedExperiences from '../components/home/FeaturedExperiences'
 import QuickCategories from '../components/home/QuickCategories'
 import ComboDeals from '../components/home/ComboDeals'
 import RecentlyViewed from '../components/home/RecentlyViewed'
+import DecorSliderSection from '../components/home/DecorSliderSection'
+import { decorSliders } from '../data/decorSliders'
+import PromoBanners from '../components/home/PromoBanners'
 
 function Home() {
   return (
@@ -33,13 +36,25 @@ function Home() {
        <TrustBar />
       <Occasions/>
       <FeaturedExperiences/>
+      <PromoBanners />
+       <DecorSliderSection slider={decorSliders[0]} bg="white" />
+      <DecorSliderSection slider={decorSliders[1]} bg="cream" />
+      <DecorSliderSection slider={decorSliders[2]} bg="white" />
+      <DecorSliderSection slider={decorSliders[3]} bg="cream" />
+        <CategorySlider />
       <ComboDeals/>
+
+
+      <DecorSliderSection slider={decorSliders[4]} bg="white" />
+      <DecorSliderSection slider={decorSliders[5]} bg="cream" />
+      <DecorSliderSection slider={decorSliders[6]} bg="white" />
+      <DecorSliderSection slider={decorSliders[7]} bg="cream" />
       {/* <OccasionShop/> */}
       {/* <BestSelling/> */}
       <FlowerPicker/>
       <PersonaliseSection/>
 
-      <CategorySlider/>
+      {/* <CategorySlider/> */}
       <TrendingPackages/>
       <PlanningSection/>
       <WhyChooseUs/>
