@@ -61,6 +61,7 @@ const ExperienceDetail = () => {
   const [selectedAddOns, setSelectedAddOns] = useState<number[]>([])
   const [showAddOnModal, setShowAddOnModal] = useState(false)
 const [showCalendar, setShowCalendar] = useState(false)
+const [pincode, setPincode] = useState('')
 
   if (!exp) {
     return (
@@ -87,8 +88,7 @@ const [showCalendar, setShowCalendar] = useState(false)
     if (addOn) dispatch(addToCart({ id: addOn.id, title: addOn.name, category: 'Add-on', price: addOn.price, image: addOn.image }))
   })
   dispatch(showToast({ message: 'Experience added! Redirecting to checkout...' }))
-  navigate('/checkout', { state: { eventDate: bookingDate, eventTime: bookingTime, guestCount } })
-}
+navigate('/checkout', { state: { eventDate: bookingDate, eventTime: bookingTime, guestCount, venue: '', city: pincode } })}
 
   const scrollToReviews = () => {
     document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })
@@ -267,6 +267,23 @@ const [showCalendar, setShowCalendar] = useState(false)
                   </select>
                 </div>
               </div>
+
+              <div className="mb-5">
+  <label
+    style={{ fontFamily: "'Jost', sans-serif" }}
+    className="block text-[0.65rem] text-[#5C4A1E] tracking-[0.15em] uppercase mb-2"
+  >
+    Pincode
+  </label>
+
+  <input
+    type="text"
+    value={pincode}
+    onChange={(e) => setPincode(e.target.value)}
+    placeholder="Enter Pincode"
+    className="w-full bg-[#FDFAF4] border border-[#EDE0C4] rounded-xl px-3 py-2.5 outline-none focus:border-[#C9A84C]"
+  />
+</div>
 
               {/* Price Breakdown */}
               <div className="space-y-2 mb-4 pb-4 border-b border-[#EDE0C4]">

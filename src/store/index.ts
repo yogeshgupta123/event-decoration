@@ -2,6 +2,8 @@ import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './authSlice'
 import cartReducer from './cartSlice'
 import uiReducer from './uiSlice'
+import themeReducer from './themeSlice'
+
 import wishlistReducer from './wishlistSlice'
 import recentlyViewedReducer from './recentlyViewedSlice.ts'
 // reducer mein: recentlyViewed: recentlyViewedReducer,
@@ -12,7 +14,8 @@ export const store = configureStore({
     cart: cartReducer,
     ui: uiReducer,
     wishlist: wishlistReducer,
- recentlyViewed: recentlyViewedReducer,    
+ recentlyViewed: recentlyViewedReducer,
+ theme: themeReducer,    
   },
 })
 

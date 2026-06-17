@@ -1,48 +1,61 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FiCheck } from 'react-icons/fi'
 import { shopItems } from '../../data/shopItems'
 import { useAppDispatch } from '../../store/hooks'
-import { addToCart } from '../../store/cartSlice'
+import { addToCart, removeFromCart } from '../../store/cartSlice'
 import { showToast } from '../../store/uiSlice'
 import Slider from './Slider'
-import PriceTag from './PriceTag'
+
+const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
 interface Props {
   excludeId?: number
   title?: string
 }
 
-// ============================================
-// GIFT SLIDER — kahin bhi use ho sakta hai
-// (PackageDetail, ExperienceDetail, ShopDetail mein add-on jaisa)
-// ============================================
-const GiftsSlider = ({ excludeId, title = '🎁 Add A Thoughtful Gift' }: Props) => {
+const GiftsSlider = ({ excludeId, title = '🎁 Add A Gift' }: Props) => {
   const dispatch = useAppDispatch()
   const gifts = shopItems.filter((g) => g.id !== excludeId).slice(0, 8)
+  const [addedIds, setAddedIds] = useState<number[]>([])
 
-  const handleQuickAdd = (gift: typeof gifts[number]) => {
-    dispatch(addToCart({ id: gift.id, title: gift.title, category: gift.category, price: gift.price, image: gift.image }))
-    dispatch(showToast({ message: `${gift.title} added to cart! 🎉` }))
+  const handleToggle = (gift: typeof gifts[number]) => {
+    if (addedIds.includes(gift.id)) {
+      dispatch(removeFromCart(gift.id))
+      setAddedIds(addedIds.filter((id) => id !== gift.id))
+    } else {
+      dispatch(addToCart({ id: gift.id, title: gift.title, category: gift.category, price: gift.price, image: gift.image }))
+      setAddedIds([...addedIds, gift.id])
+      dispatch(showToast({ message: `${gift.title} added to cart! 🎉` }))
+    }
   }
 
   return (
     <div className="mb-6">
-      <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3">{title}</h3>
+      <h3 style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#1A1208] font-semibold tracking-[0.15em] uppercase mb-3 whitespace-nowrap">{title}</h3>
       <Slider>
-        {gifts.map((gift) => (
-          <div key={gift.id} className="shrink-0 w-[160px] bg-white rounded-xl p-3 shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
-            <Link to={`/shop/${gift.id}`}>
-              <img src={gift.image} alt={gift.title} className="w-full h-[90px] rounded-lg object-cover mb-2" />
-              <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.75rem] text-[#1A1208] font-medium leading-snug mb-1 truncate">{gift.title}</p>
-            </Link>
-            <div className="flex items-center justify-between">
-<PriceTag
-  price={gift.price}
-  size="sm"
-  discountPercent={20}
-/>              <button onClick={() => handleQuickAdd(gift)} className="w-6 h-6 rounded-full bg-[#1A1208] text-white flex items-center justify-center hover:bg-[#C9A84C] transition-colors text-[0.8rem]">+</button>
+        {gifts.map((gift) => {
+          const isAdded = addedIds.includes(gift.id)
+          return (
+            <div key={gift.id} className="shrink-0 w-[150px] bg-white rounded-xl p-3 shadow-[0_2px_8px_rgba(26,18,8,0.05)]">
+              <Link to={`/shop/${gift.id}`}>
+                <div className="w-full aspect-square rounded-lg overflow-hidden mb-2">
+                  <img src={gift.image} alt={gift.title} className="w-full h-full object-cover" />
+                </div>
+                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.72rem] text-[#1A1208] font-medium leading-snug mb-1 truncate">{gift.title}</p>
+              </Link>
+              <div className="flex items-center justify-between gap-1">
+                <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.74rem] text-[#C9A84C] font-semibold shrink-0">{formatPrice(gift.price)}</span>
+                <button
+                  onClick={() => handleToggle(gift)}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors text-[0.8rem] shrink-0 ${isAdded ? 'bg-[#7B9E7B] text-white' : 'bg-[#1A1208] text-white hover:bg-[#C9A84C]'}`}
+                >
+                  {isAdded ? <FiCheck size={12} /> : '+'}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </Slider>
     </div>
   )

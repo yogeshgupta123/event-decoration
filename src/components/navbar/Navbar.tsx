@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MegaMenu from "./MegaMenu";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   FiSearch,
   FiHelpCircle,
@@ -17,6 +17,8 @@ import {
   FiPhone,
   FiHelpCircle as FiHelp,
 } from "react-icons/fi";
+import { FiMoon, FiSun } from "react-icons/fi";
+import { toggleTheme } from "../../store/themeSlice";
 
 // ============================================
 // NAV CATEGORIES — FnP style horizontal bar
@@ -640,13 +642,20 @@ const Navbar = () => {
   const guestRef = useRef<HTMLDivElement>(null);
   const categoryBarRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
+  const isDark = useAppSelector((state) => state.theme.isDark);
   const cartItems = useAppSelector((state) => state.cart.items);
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-const [city, setCity] = useState('Delhi NCR')
-const [cityOpen, setCityOpen] = useState(false)
-const cities = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Jaipur', 'Pune', 'Hyderabad']
-
+  const [city, setCity] = useState("Delhi NCR");
+  const [cityOpen, setCityOpen] = useState(false);
+  const cities = [
+    "Delhi NCR",
+    "Mumbai",
+    "Bangalore",
+    "Jaipur",
+    "Pune",
+    "Hyderabad",
+  ];
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -713,29 +722,40 @@ const cities = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Jaipur', 'Pune', 'Hyderabad
 
             {/* LOCATION — desktop */}
             <div className="relative hidden lg:block">
-  <button
-    onClick={() => setCityOpen(!cityOpen)}
-    className="flex items-center gap-1.5 hover:text-[#C9A84C] transition-colors shrink-0 border border-[#EDE0C4] rounded-full px-3 py-1.5"
-  >
-    <FiMapPin size={13} color="#C9A84C" />
-    <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.72rem', color: '#5C4A1E' }}>{city}</span>
-    <FiChevronDown size={11} color="#9E8A6A" />
-  </button>
-  {cityOpen && (
-    <div className="absolute top-[calc(100%+8px)] left-0 bg-white rounded-xl shadow-[0_12px_40px_rgba(26,18,8,0.15)] border border-[#EDE0C4] z-20 overflow-hidden w-[160px]">
-      {cities.map((c) => (
-        <button
-          key={c}
-          onClick={() => { setCity(c); setCityOpen(false) }}
-          style={{ fontFamily: "'Jost', sans-serif" }}
-          className={`w-full text-left px-4 py-2.5 text-[0.78rem] hover:bg-[#FDFAF4] transition-colors ${c === city ? 'text-[#C9A84C] font-semibold' : 'text-[#5C4A1E]'}`}
-        >
-          {c}
-        </button>
-      ))}
-    </div>
-  )}
-</div>
+              <button
+                onClick={() => setCityOpen(!cityOpen)}
+                className="flex items-center gap-1.5 hover:text-[#C9A84C] transition-colors shrink-0 border border-[#EDE0C4] rounded-full px-3 py-1.5"
+              >
+                <FiMapPin size={13} color="#C9A84C" />
+                <span
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    fontSize: "0.72rem",
+                    color: "#5C4A1E",
+                  }}
+                >
+                  {city}
+                </span>
+                <FiChevronDown size={11} color="#9E8A6A" />
+              </button>
+              {cityOpen && (
+                <div className="absolute top-[calc(100%+8px)] left-0 bg-white rounded-xl shadow-[0_12px_40px_rgba(26,18,8,0.15)] border border-[#EDE0C4] z-20 overflow-hidden w-[160px]">
+                  {cities.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setCity(c);
+                        setCityOpen(false);
+                      }}
+                      style={{ fontFamily: "'Jost', sans-serif" }}
+                      className={`w-full text-left px-4 py-2.5 text-[0.78rem] hover:bg-[#FDFAF4] transition-colors ${c === city ? "text-[#C9A84C] font-semibold" : "text-[#5C4A1E]"}`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* SEARCH BAR */}
             <div className="hidden md:flex flex-1 max-w-[480px] items-center bg-[#FDFAF4] border border-[#EDE0C4] rounded-full px-4 py-2.5 gap-3 hover:border-[#C9A84C] transition-colors focus-within:border-[#C9A84C] focus-within:shadow-[0_0_0_3px_rgba(201,168,76,0.1)]">
@@ -766,7 +786,20 @@ const cities = ['Delhi NCR', 'Mumbai', 'Bangalore', 'Jaipur', 'Pune', 'Hyderabad
                   HELP
                 </span>
               </button>
-
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className="flex flex-col items-center gap-0.5 text-[#5C4A1E] hover:text-[#C9A84C] transition-colors"
+              >
+                {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
+                <span
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    fontSize: "0.55rem",
+                  }}
+                >
+                  {isDark ? "LIGHT" : "DARK"}
+                </span>
+              </button>
               {/* GUEST DROPDOWN */}
               <div className="relative" ref={guestRef}>
                 <button

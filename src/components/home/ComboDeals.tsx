@@ -1,4 +1,5 @@
-
+import { useState } from 'react'
+import { FiCheck } from 'react-icons/fi'
 import { combos } from '../../data/combos'
 import { useAppDispatch } from '../../store/hooks'
 import { addToCart } from '../../store/cartSlice'
@@ -10,15 +11,24 @@ const formatPrice = (price: number) => `₹${price.toLocaleString('en-IN')}`
 
 const ComboDeals = () => {
   const dispatch = useAppDispatch()
+  // ============================================
+  // KONSE COMBOS ADD HO GAYE — track karne ke liye
+  // ============================================
+  const [addedCombos, setAddedCombos] = useState<number[]>([])
 
-  // ============================================
-  // POORA COMBO EK SAATH CART MEIN — har item add karo
-  // ============================================
-  const handleAddCombo = (combo: typeof combos[number]) => {
-    combo.items.forEach((item) => {
-      dispatch(addToCart({ id: item.id, title: item.title, category: item.category, price: item.price, image: item.image }))
-    })
-    dispatch(showToast({ message: `${combo.title} added to cart! 🎁` }))
+  const handleToggleCombo = (combo: typeof combos[number]) => {
+    if (addedCombos.includes(combo.id)) {
+      // REMOVE — cart se sab items hatao, list se bhi hatao
+      combo.items.forEach((item) => dispatch({ type: 'cart/removeFromCart', payload: item.id }))
+      setAddedCombos(addedCombos.filter((id) => id !== combo.id))
+      dispatch(showToast({ message: `${combo.title} removed from cart` }))
+    } else {
+      combo.items.forEach((item) => {
+        dispatch(addToCart({ id: item.id, title: item.title, category: item.category, price: item.price, image: item.image }))
+      })
+      setAddedCombos([...addedCombos, combo.id])
+      dispatch(showToast({ message: `${combo.title} added to cart! 🎁` }))
+    }
   }
 
   return (
@@ -32,39 +42,56 @@ const ComboDeals = () => {
         </FadeIn>
 
         <Slider>
-          {combos.map((combo) => (
-            <div key={combo.id} className="shrink-0 w-[320px] bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
-              <div className="flex items-center justify-between mb-3">
-                <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.2rem] text-[#1A1208] font-semibold leading-snug">{combo.title}</h3>
-                <span style={{ fontFamily: "'Jost', sans-serif" }} className="bg-[#7B9E7B] text-white rounded-full text-[0.6rem] px-2.5 py-1 font-semibold shrink-0 ml-2">{combo.badge}</span>
-              </div>
+          {combos.map((combo) => {
+            const isAdded = addedCombos.includes(combo.id)
+            const originalTotal = combo.items.reduce((sum, i) => sum + i.price, 0)
 
-              <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A] leading-relaxed mb-4">{combo.description}</p>
+            return (
+              <div key={combo.id} className="shrink-0 w-[320px] bg-white rounded-2xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
+                <div className="flex items-center justify-between mb-3 gap-2">
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.15rem] text-[#1A1208] font-semibold leading-snug truncate">{combo.title}</h3>
+                  <span style={{ fontFamily: "'Jost', sans-serif" }} className="bg-[#7B9E7B] text-white rounded-full text-[0.6rem] px-2.5 py-1 font-semibold shrink-0 whitespace-nowrap">{combo.badge}</span>
+                </div>
 
-              {/* Mini item thumbnails */}
-              <div className="flex gap-2 mb-4">
-                {combo.items.map((item, i) => (
-                  <div key={item.id} className="relative">
-                    <img src={item.image} alt={item.title} className="w-14 h-14 rounded-lg object-cover" />
-                    {i < combo.items.length - 1 && (
-                      <span className="absolute -right-2.5 top-1/2 -translate-y-1/2 text-[#C9A84C] font-bold">+</span>
-                    )}
+                <p style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.78rem] text-[#9E8A6A] leading-relaxed mb-4 line-clamp-2">{combo.description}</p>
+
+                {/* ============================================
+                    Images — object-cover + fixed aspect, ab chipkega nahi
+                ============================================ */}
+                <div className="flex gap-2 mb-4">
+                  {combo.items.map((item, i) => (
+                    <div key={item.id} className="relative flex-1">
+                      <div className="w-full aspect-square rounded-lg overflow-hidden bg-[#FDFAF4]">
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                      </div>
+                      {i < combo.items.length - 1 && (
+                        <span className="absolute -right-[9px] top-1/2 -translate-y-1/2 text-[#C9A84C] font-bold text-[0.9rem] z-10">+</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* ============================================
+                    Price with discount + Add Combo — ek line mein
+                ============================================ */}
+                <div className="flex items-center justify-between pt-3 border-t border-[#EDE0C4] gap-3">
+                  <div className="flex items-baseline gap-1.5 flex-wrap">
+                    <span style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.25rem] text-[#1A1208] font-bold">{formatPrice(combo.comboPrice)}</span>
+                    <span style={{ fontFamily: "'Jost', sans-serif" }} className="text-[0.7rem] text-[#9E8A6A] line-through">{formatPrice(originalTotal)}</span>
                   </div>
-                ))}
+                  <button
+                    onClick={() => handleToggleCombo(combo)}
+                    style={{ fontFamily: "'Jost', sans-serif" }}
+                    className={`flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[0.65rem] tracking-[0.1em] uppercase font-semibold transition-colors shrink-0 ${
+                      isAdded ? 'bg-[#7B9E7B] text-white' : 'bg-[#C9A84C] text-white hover:bg-[#1A1208]'
+                    }`}
+                  >
+                    {isAdded ? <><FiCheck size={12} /> Added</> : 'Add Combo'}
+                  </button>
+                </div>
               </div>
-
-              <div className="flex items-center justify-between pt-3 border-t border-[#EDE0C4]">
-                <p style={{ fontFamily: "'Cormorant Garamond', serif" }} className="text-[1.4rem] text-[#1A1208] font-bold">{formatPrice(combo.comboPrice)}</p>
-                <button
-                  onClick={() => handleAddCombo(combo)}
-                  style={{ fontFamily: "'Jost', sans-serif" }}
-                  className="bg-[#C9A84C] text-white rounded-full px-5 py-2.5 text-[0.68rem] tracking-[0.1em] uppercase font-semibold hover:bg-[#1A1208] transition-colors"
-                >
-                  Add Combo
-                </button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </Slider>
       </div>
     </section>
